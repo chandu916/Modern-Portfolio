@@ -9,36 +9,72 @@ type ThemeId = "studio-dawn" | "midnight-gold" | "deep-ocean" | "charcoal-luxe";
 const themes: {
   id: ThemeId;
   name: string;
-  mood: string;
   preview: string;
 }[] = [
   {
     id: "studio-dawn",
     name: "Studio Dawn",
-    mood: "Warm editorial brightness",
     preview: "linear-gradient(135deg, #ffd6a5 0%, #9ad6d0 55%, #eef3f7 100%)",
   },
   {
     id: "midnight-gold",
     name: "Midnight Gold",
-    mood: "Luxury executive depth",
     preview: "linear-gradient(135deg, #0b0b0f 0%, #8b6f2e 45%, #e0b95b 100%)",
   },
   {
     id: "deep-ocean",
     name: "Deep Ocean Glass",
-    mood: "Premium tech with glass tones",
     preview: "linear-gradient(135deg, #0f172a 0%, #1d4ed8 48%, #60a5fa 100%)",
   },
   {
     id: "charcoal-luxe",
     name: "Charcoal Minimal Luxe",
-    mood: "Quiet monochrome refinement",
     preview: "linear-gradient(135deg, #111111 0%, #6b6762 52%, #d4cfc7 100%)",
   },
 ];
 
 const THEME_STORAGE_KEY = "modern-portfolio-theme";
+
+type StackViewId =
+  | "solar-system"
+  | "timeline-evolution"
+  | "radial-radar";
+
+const stackViews: {
+  id: StackViewId;
+  name: string;
+  note: string;
+}[] = [
+  {
+    id: "solar-system",
+    name: "Solar System 2.5D",
+    note: "Categories as planets and tools as orbiting moons",
+  },
+  {
+    id: "timeline-evolution",
+    name: "Timeline Evolution",
+    note: "Foundation to scale to AI/cloud stack growth",
+  },
+  {
+    id: "radial-radar",
+    name: "Radial Skill Radar",
+    note: "Current versus target capabilities by domain",
+  },
+];
+
+const stackViewByTheme: Record<ThemeId, StackViewId> = {
+  "studio-dawn": "timeline-evolution",
+  "midnight-gold": "radial-radar",
+  "deep-ocean": "timeline-evolution",
+  "charcoal-luxe": "solar-system",
+};
+
+const timelineStages = [
+  { title: "Foundation", items: ["HTML/CSS", "JavaScript", "React"] },
+  { title: "Scale", items: ["Next.js", "TypeScript", "Node.js"] },
+  { title: "AI + Cloud", items: ["Azure", "OpenAI", "Data Ops"] },
+];
+
 
 const featuredProjects = [
   {
@@ -118,6 +154,8 @@ export default function Home() {
   }, [themeIndex]);
 
   const currentTheme = themes[themeIndex];
+  const currentStackId = stackViewByTheme[currentTheme.id];
+  const currentStackView = stackViews.find((view) => view.id === currentStackId) ?? stackViews[0];
 
   const handleCycleTheme = () => {
     setThemeIndex((prev) => (prev + 1) % themes.length);
@@ -193,10 +231,6 @@ export default function Home() {
               aria-label={`Switch theme. Current theme is ${currentTheme.name}`}
             >
               <span className="logo-wordmark">CHANDU</span>
-              <span className="logo-meta">
-                <span className="logo-meta-label">Tap to switch themes</span>
-                <span className="logo-meta-name">{currentTheme.name}</span>
-              </span>
             </button>
 
             <div className="theme-preview" aria-label={`Theme ${themeIndex + 1} of ${themes.length}: ${currentTheme.name}`}>
@@ -210,8 +244,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
-          <p className="theme-note text-sm">{currentTheme.mood}</p>
         </div>
 
         <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0">
@@ -266,35 +298,97 @@ export default function Home() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.1 }}
-            className="card space-y-5 md:self-stretch"
+            className="card stack-lab md:self-stretch"
           >
-            <p className="text-dim text-xs uppercase tracking-[0.16em]">Core Stack</p>
-            <div className="flex flex-wrap gap-2.5">
-              {[
-                "Next.js",
-                "TypeScript",
-                "Tailwind",
-                "Node.js",
-                "PostgreSQL",
-                "Azure",
-              ].map((item) => (
-                <span key={item} className="chip">
-                  {item}
-                </span>
-              ))}
+            <div className="stack-lab-head">
+              <div>
+                <p className="text-dim text-xs uppercase tracking-[0.16em]">Stack Lab</p>
+                <h3 className="font-display text-xl sm:text-2xl">{currentStackView.name}</h3>
+                <p className="text-soft mt-1 text-sm">{currentStackView.note}</p>
+              </div>
             </div>
+
+            <div className={`stack-scene model-${currentStackView.id}`}>
+
+              {currentStackView.id === "solar-system" ? (
+                <div className="solar-shell">
+                  <div className="solar-orbit orbit-a" />
+                  <div className="solar-orbit orbit-b" />
+                  <motion.div className="solar-core" animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3.2, repeat: Infinity }}>
+                    Platform
+                  </motion.div>
+                  {[
+                    { label: "Frontend", left: "28%", top: "28%", moon: "Next" },
+                    { label: "Backend", left: "70%", top: "32%", moon: "Node" },
+                    { label: "Data", left: "34%", top: "70%", moon: "SQL" },
+                    { label: "Cloud", left: "74%", top: "68%", moon: "Azure" },
+                  ].map((planet, index) => (
+                    <motion.button
+                      key={planet.label}
+                      type="button"
+                      className="solar-planet"
+                      style={{ left: planet.left, top: planet.top }}
+                      whileHover={{ scale: 1.08 }}
+                      animate={{ y: [0, index % 2 === 0 ? -4 : 4, 0] }}
+                      transition={{ duration: 2.8 + index * 0.3, repeat: Infinity }}
+                    >
+                      {planet.label}
+                      <span className="solar-moon">{planet.moon}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              ) : null}
+
+              {currentStackView.id === "timeline-evolution" ? (
+                <div className="timeline-shell">
+                  <div className="timeline-rail" />
+                  <div className="timeline-grid">
+                    {timelineStages.map((stage, index) => (
+                      <motion.div
+                        key={stage.title}
+                        className="timeline-stage"
+                        whileHover={{ y: -6 }}
+                        animate={{ y: [0, -2, 0] }}
+                        transition={{ duration: 2.8 + index * 0.3, repeat: Infinity }}
+                      >
+                        <p className="timeline-title">{stage.title}</p>
+                        <div className="timeline-items">
+                          {stage.items.map((item) => (
+                            <span key={item} className="timeline-chip">
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {currentStackView.id === "radial-radar" ? (
+                <div className="radar-shell">
+                  <svg className="radar-svg" viewBox="0 0 260 220" preserveAspectRatio="none" aria-hidden="true">
+                    <polygon points="130,26 212,70 212,150 130,194 48,150 48,70" className="radar-grid" />
+                    <polygon points="130,52 188,82 188,138 130,170 72,138 72,82" className="radar-grid" />
+                    <polygon points="130,72 172,94 172,126 130,148 88,126 88,94" className="radar-grid" />
+                    <polygon points="130,44 194,78 180,140 130,164 82,132 90,88" className="radar-shape current" />
+                    <polygon points="130,36 204,72 200,148 130,178 72,144 76,78" className="radar-shape target" />
+                  </svg>
+                  <div className="radar-labels">
+                    <span>UI</span>
+                    <span>API</span>
+                    <span>Data</span>
+                    <span>Cloud</span>
+                    <span>DevOps</span>
+                    <span>AI</span>
+                  </div>
+                </div>
+              ) : null}
+
+            </div>
+
             <div className="section-divider pt-5">
               <p className="text-muted text-sm">Based in India · Available remotely worldwide</p>
-            </div>
-            <div className="theme-card">
-              <p className="text-dim text-xs uppercase tracking-[0.16em]">Active Palette</p>
-              <div className="mt-3 flex items-center gap-3">
-                <span className="theme-card-preview" style={{ background: currentTheme.preview }} />
-                <div>
-                  <p className="font-display text-lg">{currentTheme.name}</p>
-                  <p className="text-soft text-sm">{currentTheme.mood}</p>
-                </div>
-              </div>
             </div>
           </motion.aside>
         </section>

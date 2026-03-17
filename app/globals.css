@@ -370,25 +370,6 @@ body {
   text-transform: uppercase;
 }
 
-.logo-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.logo-meta-label {
-  color: var(--soft);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.logo-meta-name {
-  color: var(--strong);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
 .theme-preview {
   display: inline-flex;
   align-items: center;
@@ -416,10 +397,6 @@ body {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--foreground) 18%, transparent);
 }
 
-.theme-note {
-  color: var(--soft);
-}
-
 .eyebrow,
 .theme-pill {
   display: inline-flex;
@@ -444,19 +421,614 @@ body {
   border-top: 1px solid var(--divider);
 }
 
-.theme-card {
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
-  background: color-mix(in srgb, var(--card) 92%, transparent);
-  padding: 0.95rem;
+.stack-lab {
+  display: grid;
+  gap: 1rem;
 }
 
-.theme-card-preview {
-  display: inline-flex;
-  height: 2.75rem;
-  width: 2.75rem;
+.stack-lab-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.stack-switch-btn {
+  min-height: 2.4rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stack-scene {
+  position: relative;
+  min-height: 17rem;
+  border-radius: 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+  background: color-mix(in srgb, var(--card) 86%, transparent);
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+}
+
+.stack-scene > div {
+  width: min(100%, 22.5rem);
+}
+
+.stack-scene.model-radial-radar:hover {
+  border-color: color-mix(in srgb, var(--button-fill) 48%, var(--foreground) 20%);
+}
+
+.stack-scene.model-radial-radar:hover .radar-shape.current {
+  fill: color-mix(in srgb, var(--button-fill) 34%, transparent);
+  stroke: color-mix(in srgb, var(--button-fill) 86%, white 14%);
+}
+
+.stack-scene.model-radial-radar:hover .radar-shape.target {
+  stroke: color-mix(in srgb, var(--secondary-text) 70%, transparent);
+}
+
+.stack-scene.model-solar-system:hover {
+  border-color: color-mix(in srgb, var(--button-fill) 42%, var(--foreground) 18%);
+}
+
+.stack-scene.model-solar-system:hover .solar-core {
+  background: color-mix(in srgb, var(--button-fill) 52%, var(--card) 48%);
+}
+
+.stack-scene.model-solar-system:hover .solar-planet {
+  background: color-mix(in srgb, var(--chip-bg) 60%, var(--button-fill) 40%);
+  border-color: color-mix(in srgb, var(--button-fill) 46%, var(--foreground) 20%);
+}
+
+.stack-scene.model-timeline-evolution:hover {
+  border-color: color-mix(in srgb, var(--button-fill) 40%, var(--foreground) 20%);
+}
+
+.stack-scene.model-timeline-evolution:hover .timeline-stage {
+  border-color: color-mix(in srgb, var(--button-fill) 38%, var(--foreground) 16%);
+  background: color-mix(in srgb, var(--card) 78%, var(--button-fill) 22%);
+}
+
+.stack-scene.model-timeline-evolution:hover .timeline-chip {
+  border-color: color-mix(in srgb, var(--button-fill) 42%, var(--foreground) 18%);
+}
+
+.stack-orbit-shell,
+.stack-tree-shell,
+.stack-constellation-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+}
+
+.orbit-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+.orbit-ring-outer {
+  width: 15rem;
+  height: 15rem;
+}
+
+.orbit-ring-inner {
+  width: 11.4rem;
+  height: 11.4rem;
+}
+
+.orbit-spokes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.orbit-spokes line {
+  stroke: color-mix(in srgb, var(--foreground) 16%, transparent);
+  stroke-width: 0.45;
+}
+
+.stack-orbit-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: color-mix(in srgb, var(--button-fill) 35%, var(--card) 65%);
+  color: var(--strong);
+}
+
+.stack-node {
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--strong);
+  padding: 0.38rem 0.68rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.stack-node.orbit {
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--background) 64%, black 18%);
+}
+
+.stack-node.tree {
+  transform: translate(-50%, -50%);
+}
+
+.stack-tree-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stack-tree-lines path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--foreground) 22%, transparent);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+}
+
+.stack-node.tree.root {
+  left: 50%;
+  top: 18%;
+  background: color-mix(in srgb, var(--button-fill) 35%, var(--chip-bg) 65%);
+}
+
+.stack-node.tree.branch-left,
+.stack-node.tree.branch-right {
+  top: 48%;
+}
+
+.stack-node.tree.branch-left {
+  left: 35%;
+}
+
+.stack-node.tree.branch-right {
+  left: 65%;
+}
+
+.stack-node.tree.leaf {
+  font-size: 0.66rem;
+}
+
+.stack-node.tree.leaf.left {
+  transform: translate(-50%, -50%);
+}
+
+.stack-node.tree.leaf.right {
+  transform: translate(-50%, -50%);
+}
+
+.stack-constellation-shell {
+  padding: 0.9rem;
+}
+
+.stack-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stack-lines path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--foreground) 18%, transparent);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 6;
+}
+
+.stack-node.constellation {
+  transform: translate(-50%, -50%);
+}
+
+.node-pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--button-fill) 64%, white 36%);
+  z-index: -1;
+  animation: nodePulse 2.1s ease-in-out infinite;
+}
+
+@keyframes nodePulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--button-fill) 40%, transparent);
+    opacity: 0.9;
+  }
+  100% {
+    box-shadow: 0 0 0 11px color-mix(in srgb, var(--button-fill) 0%, transparent);
+    opacity: 0;
+  }
+}
+
+.skyline-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+  padding: 0.8rem 0.9rem 1rem;
+}
+
+.skyline-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(to top, color-mix(in srgb, var(--foreground) 8%, transparent) 0 1px, transparent 1px 34px),
+    linear-gradient(to right, transparent 0%, color-mix(in srgb, var(--foreground) 8%, transparent) 50%, transparent 100%);
+  opacity: 0.5;
+}
+
+.skyline-pulse {
+  position: absolute;
+  left: 0;
+  bottom: 1.25rem;
+  width: 4rem;
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--button-fill) 65%, white 35%);
+}
+
+.skyline-bars {
+  position: absolute;
+  inset: 0.9rem 0.9rem 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+  align-items: end;
+}
+
+.skyline-bar {
+  border-radius: 0.7rem 0.7rem 0.2rem 0.2rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  background: linear-gradient(to top, color-mix(in srgb, var(--button-fill) 38%, var(--card) 62%), color-mix(in srgb, var(--button-fill) 60%, var(--card) 40%));
+  display: grid;
+  align-content: end;
+  justify-items: center;
+  gap: 0.15rem;
+  padding: 0.45rem 0.3rem;
+}
+
+.skyline-value {
+  font-size: 0.62rem;
+  color: var(--soft);
+}
+
+.skyline-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--strong);
+}
+
+.circuit-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--foreground) 16%, transparent) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+.circuit-traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.circuit-traces path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--button-fill) 56%, var(--foreground) 44%);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.circuit-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--chip-bg) 80%, var(--button-fill) 20%);
+  color: var(--strong);
+  padding: 0.42rem 0.58rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.solar-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+}
+
+.solar-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.solar-orbit.orbit-a {
+  width: 13.8rem;
+  height: 9.2rem;
+}
+
+.solar-orbit.orbit-b {
+  width: 9.4rem;
+  height: 13.8rem;
+}
+
+.solar-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 5.4rem;
+  height: 5.4rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  background: color-mix(in srgb, var(--button-fill) 34%, var(--card) 66%);
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  transition: background 180ms ease;
+}
+
+.solar-planet {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--chip-bg) 82%, var(--button-fill) 18%);
+  color: var(--strong);
+  padding: 0.38rem 0.58rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.solar-moon {
+  position: absolute;
+  right: -0.4rem;
+  top: -0.45rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  background: color-mix(in srgb, var(--button-fill) 68%, var(--card) 32%);
+  color: var(--button-text);
+  padding: 0.1rem 0.28rem;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+}
+
+.timeline-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+  padding: 1rem 0.9rem;
+}
+
+.timeline-rail {
+  position: absolute;
+  left: 2rem;
+  right: 2rem;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, color-mix(in srgb, var(--button-fill) 30%, transparent), color-mix(in srgb, var(--button-fill) 70%, transparent));
+}
+
+.timeline-grid {
+  position: relative;
+  display: grid;
+  height: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.timeline-stage {
   border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  padding: 0.75rem;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.timeline-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.timeline-items {
+  margin-top: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.timeline-chip {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--chip-bg) 86%, transparent);
+  padding: 0.18rem 0.42rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: border-color 180ms ease;
+}
+
+.hex-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+}
+
+.hex-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  clip-path: polygon(25% 6%, 75% 6%, 95% 50%, 75% 94%, 25% 94%, 5% 50%);
+  min-width: 3.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  background: color-mix(in srgb, var(--chip-bg) 78%, var(--button-fill) 22%);
+  color: var(--strong);
+  padding: 0.55rem 0.5rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.radar-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+}
+
+.radar-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.radar-grid {
+  fill: none;
+  stroke: color-mix(in srgb, var(--foreground) 14%, transparent);
+  stroke-width: 1.1;
+}
+
+.radar-shape {
+  stroke-width: 1.2;
+  transition: fill 180ms ease, stroke 180ms ease;
+}
+
+.radar-shape.current {
+  fill: color-mix(in srgb, var(--button-fill) 24%, transparent);
+  stroke: color-mix(in srgb, var(--button-fill) 72%, var(--foreground) 28%);
+}
+
+.radar-shape.target {
+  fill: color-mix(in srgb, var(--secondary-bg) 40%, transparent);
+  stroke: color-mix(in srgb, var(--secondary-text) 44%, transparent);
+  stroke-dasharray: 4 5;
+}
+
+.radar-labels {
+  position: absolute;
+  inset: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+.radar-labels span {
+  position: absolute;
+}
+
+.radar-labels span:nth-child(1) { left: 48%; top: 8%; }
+.radar-labels span:nth-child(2) { right: 12%; top: 25%; }
+.radar-labels span:nth-child(3) { right: 10%; top: 56%; }
+.radar-labels span:nth-child(4) { left: 46%; bottom: 10%; }
+.radar-labels span:nth-child(5) { left: 10%; top: 58%; }
+.radar-labels span:nth-child(6) { left: 12%; top: 25%; }
+
+.sankey-shell {
+  position: relative;
+  height: 100%;
+  min-height: 17rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  padding: 0.95rem 0.7rem;
+}
+
+.sankey-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.flow {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.flow.a,
+.flow.b,
+.flow.c {
+  stroke-width: 8;
+  stroke: color-mix(in srgb, var(--button-fill) 34%, transparent);
+}
+
+.flow.d,
+.flow.e,
+.flow.f {
+  stroke-width: 10;
+  stroke: color-mix(in srgb, var(--secondary-text) 22%, transparent);
+}
+
+.sankey-col {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.2rem;
+}
+
+.sankey-col.left,
+.sankey-col.mid,
+.sankey-col.right {
+  align-items: center;
+}
+
+.sankey-node {
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--chip-bg) 84%, transparent);
+  color: var(--strong);
+  padding: 0.34rem 0.45rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .scrollbar-none {
@@ -481,5 +1053,44 @@ body {
   .chip {
     font-size: 0.68rem;
     letter-spacing: 0.06em;
+  }
+
+  .stack-scene,
+  .stack-orbit-shell,
+  .stack-tree-shell,
+  .stack-constellation-shell {
+    min-height: 18.5rem;
+  }
+
+  .stack-scene {
+    justify-items: start;
+  }
+
+  .stack-scene > div {
+    width: 22.5rem;
+  }
+
+  .stack-node {
+    font-size: 0.64rem;
+    padding: 0.35rem 0.62rem;
+  }
+
+  .skyline-bars {
+    gap: 0.38rem;
+  }
+
+  .hex-node {
+    min-width: 3.2rem;
+    font-size: 0.55rem;
+  }
+
+  .orbit-ring-outer {
+    width: 13.4rem;
+    height: 13.4rem;
+  }
+
+  .orbit-ring-inner {
+    width: 9.8rem;
+    height: 9.8rem;
   }
 }
