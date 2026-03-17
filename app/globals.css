@@ -33,8 +33,9 @@
   --theme-gradient-start: #fbfbf8;
   --theme-gradient-mid: #f3f5ee;
   --theme-gradient-end: #eef3f7;
-  --font-body: var(--font-manrope);
-  --font-heading: var(--font-space-grotesk);
+  --font-body: var(--font-outfit);
+  --font-heading: var(--font-fraunces);
+  --font-signature: var(--font-cinzel-decorative);
 }
 
 html[data-theme="midnight-gold"] {
@@ -70,7 +71,7 @@ html[data-theme="midnight-gold"] {
   --theme-gradient-start: #030303;
   --theme-gradient-mid: #080808;
   --theme-gradient-end: #0a0a0a;
-  --font-body: var(--font-poppins);
+  --font-body: var(--font-outfit);
   --font-heading: var(--font-playfair-display);
 }
 
@@ -107,7 +108,7 @@ html[data-theme="deep-ocean"] {
   --theme-gradient-start: #081221;
   --theme-gradient-mid: #0f172a;
   --theme-gradient-end: #12233f;
-  --font-body: var(--font-inter);
+  --font-body: var(--font-outfit);
   --font-heading: var(--font-sora);
 }
 
@@ -144,8 +145,8 @@ html[data-theme="charcoal-luxe"] {
   --theme-gradient-start: #0b0b0b;
   --theme-gradient-mid: #111111;
   --theme-gradient-end: #191816;
-  --font-body: var(--font-dm-sans);
-  --font-heading: var(--font-dm-sans);
+  --font-body: var(--font-outfit);
+  --font-heading: var(--font-fraunces);
 }
 
 @theme inline {
@@ -158,9 +159,16 @@ html[data-theme="charcoal-luxe"] {
 html {
   background: var(--background);
   color: var(--foreground);
+  scroll-behavior: smooth;
   transition:
     background-color 240ms ease,
     color 240ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -453,42 +461,230 @@ body {
 }
 
 .logo-toggle {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
-  gap: 0.9rem;
-  border-radius: 1.25rem;
+  justify-content: flex-start;
+  gap: 1rem;
+  border-radius: 1.4rem;
   border: 1px solid var(--card-border);
   background: color-mix(in srgb, var(--card) 86%, transparent);
-  padding: 0.7rem 0.9rem;
+  padding: 0.95rem 1.15rem;
   text-align: left;
+  width: fit-content;
+  max-width: 100%;
+  box-shadow:
+    0 12px 28px color-mix(in srgb, var(--background) 74%, black 16%),
+    inset 0 1px 0 color-mix(in srgb, white 18%, transparent);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
-    background-color 180ms ease;
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.logo-aura {
+  position: absolute;
+  inset: -12%;
+  z-index: -3;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 20% 50%, color-mix(in srgb, var(--button-fill) 28%, transparent) 0%, transparent 34%),
+    radial-gradient(circle at 80% 46%, color-mix(in srgb, white 22%, transparent) 0%, transparent 28%),
+    linear-gradient(135deg, color-mix(in srgb, var(--button-fill) 26%, transparent), transparent 50%, color-mix(in srgb, var(--secondary-border) 26%, transparent));
+  filter: blur(18px);
+  opacity: 0.9;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.logo-toggle::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  z-index: -2;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at var(--spark-x, 50%) var(--spark-y, 50%), color-mix(in srgb, var(--button-fill) 38%, white 16%) 0%, transparent 36%),
+    linear-gradient(135deg, color-mix(in srgb, var(--secondary-border) 70%, transparent), transparent 42%, color-mix(in srgb, var(--button-fill) 42%, transparent));
+  filter: blur(20px);
+  opacity: 0.72;
+  transition: opacity 180ms ease;
+}
+
+.logo-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--spark-x, 50%) var(--spark-y, 50%), rgba(255, 255, 255, 0.98) 0 1.1%, rgba(255, 248, 215, 0.74) 1.8%, transparent 8%),
+    radial-gradient(circle at calc(var(--spark-x, 50%) + 11px) calc(var(--spark-y, 50%) - 10px), rgba(255, 250, 224, 0.78) 0 0.85%, transparent 3.8%),
+    radial-gradient(circle at calc(var(--spark-x, 50%) - 16px) calc(var(--spark-y, 50%) + 10px), rgba(255, 232, 173, 0.66) 0 0.75%, transparent 4.2%),
+    radial-gradient(circle at calc(var(--spark-x, 50%) + 18px) calc(var(--spark-y, 50%) + 12px), color-mix(in srgb, var(--button-fill) 84%, white 16%) 0 0.75%, transparent 4%),
+    linear-gradient(120deg, transparent 28%, rgba(255, 255, 255, 0.16) 50%, transparent 72%);
+  mix-blend-mode: screen;
+  opacity: var(--spark-alpha, 0);
+  transition: opacity 140ms ease;
 }
 
 .logo-toggle:hover {
   transform: translateY(-1px);
   border-color: var(--secondary-border);
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--background) 70%, black 16%),
+    0 0 0 1px color-mix(in srgb, var(--button-fill) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 26%, transparent);
+}
+
+.logo-toggle:hover .logo-aura,
+.logo-toggle[data-active="true"] .logo-aura {
+  transform: scale(1.06);
+  opacity: 1;
+}
+
+.logo-toggle:focus-visible {
+  outline: none;
+  border-color: var(--secondary-border);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--focus-ring) 90%, transparent),
+    0 16px 34px color-mix(in srgb, var(--background) 70%, black 16%);
 }
 
 .logo-wordmark {
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1rem;
-  letter-spacing: 0.14em;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-family: var(--font-signature), serif;
+  font-size: clamp(1.3rem, 3.6vw, 2.15rem);
+  letter-spacing: 0.26em;
   text-transform: uppercase;
+  background: linear-gradient(135deg, color-mix(in srgb, white 86%, var(--foreground) 14%) 0%, color-mix(in srgb, var(--button-fill) 76%, white 24%) 48%, color-mix(in srgb, var(--secondary-border) 84%, white 16%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 0 16px color-mix(in srgb, var(--button-fill) 28%, transparent),
+    0 0 30px color-mix(in srgb, white 12%, transparent);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--button-fill) 32%, transparent));
+}
+
+.logo-wordmark::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: color-mix(in srgb, var(--button-fill) 54%, white 12%);
+  opacity: 0.82;
+  filter: blur(12px);
+}
+
+.logo-spark-cluster {
+  position: absolute;
+  left: var(--spark-x, 50%);
+  top: var(--spark-y, 50%);
+  width: 0;
+  height: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+
+.logo-spark-core {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 1) 0 24%, rgba(255, 239, 176, 0.95) 26% 48%, rgba(255, 205, 102, 0.54) 54%, transparent 76%);
+  transform: translate(-50%, -50%) scale(0.25);
+  box-shadow:
+    0 0 18px rgba(255, 233, 172, 0.82),
+    0 0 32px color-mix(in srgb, var(--button-fill) 44%, transparent);
+  animation: logoSparkCoreBurst 520ms cubic-bezier(0.16, 0.84, 0.32, 1) forwards;
+}
+
+.logo-spark-burst {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--burst-length, 3.6rem);
+  height: 2px;
+  border-radius: 999px;
+  transform-origin: left center;
+  transform: translate(-6%, -50%) rotate(var(--burst-angle, 0deg)) scaleX(0.08);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 182, 0.95) 12%, rgba(255, 199, 94, 0.62) 54%, rgba(255, 199, 94, 0) 100%);
+  box-shadow: 0 0 10px rgba(255, 222, 144, 0.68);
+  opacity: 0;
+  animation: logoSparkFirecracker 520ms cubic-bezier(0.15, 0.82, 0.28, 1) var(--burst-delay, 0ms) forwards;
+}
+
+.logo-spark-burst::after {
+  content: "";
+  position: absolute;
+  right: -0.2rem;
+  top: 50%;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0 28%, rgba(255, 233, 167, 0.95) 38%, rgba(255, 201, 102, 0.1) 82%, transparent 100%);
+  transform: translateY(-50%);
+  box-shadow: 0 0 12px rgba(255, 227, 147, 0.72);
+}
+
+@keyframes logoSparkCoreBurst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  16% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.94;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
+
+@keyframes logoSparkFirecracker {
+  0% {
+    opacity: 0;
+    transform: translate(-6%, -50%) rotate(var(--burst-angle, 0deg)) scaleX(0.08);
+  }
+  18% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-6%, -50%) rotate(var(--burst-angle, 0deg)) scaleX(1) translateX(0.52rem);
+  }
 }
 
 .theme-preview {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.4rem 0;
+  justify-content: flex-end;
+  gap: 0.42rem;
+  margin-left: 0.35rem;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .theme-swatch {
-  height: 0.95rem;
-  width: 0.95rem;
+  height: 0.82rem;
+  width: 0.82rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 12%, transparent);
@@ -1169,6 +1365,17 @@ body {
   .logo-toggle {
     width: 100%;
     justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 0.95rem;
+  }
+
+  .theme-preview {
+    gap: 0.36rem;
+  }
+
+  .theme-swatch {
+    height: 0.74rem;
+    width: 0.74rem;
   }
 
   .chip {

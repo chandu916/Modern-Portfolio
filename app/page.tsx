@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
 type ThemeId = "studio-dawn" | "midnight-gold" | "deep-ocean" | "charcoal-luxe";
 
@@ -98,6 +98,21 @@ const timelineStages = [
   { title: "AI + Cloud", items: ["Azure", "OpenAI", "Data Ops"] },
 ];
 
+const logoBurstParticles = [
+  { angle: -78, delay: "0ms", length: "3.4rem" },
+  { angle: -44, delay: "30ms", length: "3.9rem" },
+  { angle: -12, delay: "60ms", length: "3.25rem" },
+  { angle: 18, delay: "20ms", length: "3.8rem" },
+  { angle: 46, delay: "70ms", length: "4rem" },
+  { angle: 78, delay: "40ms", length: "3.45rem" },
+  { angle: 122, delay: "55ms", length: "3.7rem" },
+  { angle: 154, delay: "10ms", length: "3.15rem" },
+  { angle: 196, delay: "85ms", length: "3.85rem" },
+  { angle: 232, delay: "35ms", length: "3.4rem" },
+  { angle: 268, delay: "65ms", length: "3.05rem" },
+  { angle: 308, delay: "25ms", length: "3.75rem" },
+];
+
 
 const featuredProjects = [
   {
@@ -150,6 +165,7 @@ type ContactFormData = {
 
 export default function Home() {
   const [themeIndex, setThemeIndex] = useState(0);
+  const [logoSpark, setLogoSpark] = useState({ x: 50, y: 50, active: false, burstKey: 0 });
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -160,6 +176,15 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+  const sparkResetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (sparkResetTimer.current !== null) {
+        window.clearTimeout(sparkResetTimer.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const storedThemeId = window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeId | null;
@@ -182,6 +207,70 @@ export default function Home() {
 
   const handleCycleTheme = () => {
     setThemeIndex((prev) => (prev + 1) % themes.length);
+  };
+
+  const handleSmoothNav = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    event.preventDefault();
+
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    window.history.replaceState(null, "", `#${targetId}`);
+  };
+
+  const getSparkPosition = (event: PointerEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    return {
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    };
+  };
+
+  const triggerLogoSpark = (x: number, y: number) => {
+    if (sparkResetTimer.current !== null) {
+      window.clearTimeout(sparkResetTimer.current);
+    }
+
+    setLogoSpark({
+      x,
+      y,
+      active: true,
+      burstKey: Date.now(),
+    });
+
+    sparkResetTimer.current = window.setTimeout(() => {
+      setLogoSpark((current) => ({ ...current, active: false }));
+      sparkResetTimer.current = null;
+    }, 520);
+  };
+
+  const updateLogoSpark = (event: PointerEvent<HTMLButtonElement>) => {
+    const { x, y } = getSparkPosition(event);
+    setLogoSpark((current) => ({ ...current, x, y }));
+  };
+
+  const burstLogoSpark = (event: PointerEvent<HTMLButtonElement>) => {
+    const { x, y } = getSparkPosition(event);
+    triggerLogoSpark(x, y);
+  };
+
+  const resetLogoSpark = () => {
+    if (sparkResetTimer.current !== null) {
+      window.clearTimeout(sparkResetTimer.current);
+      sparkResetTimer.current = null;
+    }
+
+    setLogoSpark((current) => ({ ...current, active: false }));
   };
 
   const handleInputChange = (
@@ -264,18 +353,44 @@ export default function Home() {
       ) : null}
 
       <header className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-4">
-            <button
-              type="button"
-              onClick={handleCycleTheme}
-              className="logo-toggle"
-              aria-label={`Switch theme. Current theme is ${currentTheme.name}`}
-            >
-              <span className="logo-wordmark">CHANDU</span>
-            </button>
-
-            <div className="theme-preview" aria-label={`Theme ${themeIndex + 1} of ${themes.length}: ${currentTheme.name}`}>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <button
+            type="button"
+            onClick={handleCycleTheme}
+            className="logo-toggle"
+            aria-label={`Switch theme. Current theme is ${currentTheme.name}`}
+            onPointerEnter={burstLogoSpark}
+            onPointerMove={updateLogoSpark}
+            onPointerDown={burstLogoSpark}
+            onPointerLeave={resetLogoSpark}
+            onBlur={resetLogoSpark}
+            onFocus={() => triggerLogoSpark(50, 50)}
+            style={{
+              "--spark-x": `${logoSpark.x}%`,
+              "--spark-y": `${logoSpark.y}%`,
+              "--spark-alpha": logoSpark.active ? "1" : "0",
+            } as React.CSSProperties}
+            data-active={logoSpark.active ? "true" : "false"}
+          >
+            <span className="logo-aura" aria-hidden="true" />
+            {logoSpark.active ? (
+              <span className="logo-spark-cluster" aria-hidden="true">
+                <span key={`core-${logoSpark.burstKey}`} className="logo-spark-core" />
+                {logoBurstParticles.map((particle, index) => (
+                  <span
+                    key={`${logoSpark.burstKey}-${index}`}
+                    className="logo-spark-burst"
+                    style={{
+                      "--burst-angle": `${particle.angle}deg`,
+                      "--burst-delay": particle.delay,
+                      "--burst-length": particle.length,
+                    } as React.CSSProperties}
+                  />
+                ))}
+              </span>
+            ) : null}
+            <span className="logo-wordmark" data-text="CHANDU">CHANDU</span>
+            <span className="theme-preview" aria-label={`Theme ${themeIndex + 1} of ${themes.length}: ${currentTheme.name}`}>
               {themes.map((theme, index) => (
                 <span
                   key={theme.id}
@@ -284,20 +399,20 @@ export default function Home() {
                   title={theme.name}
                 />
               ))}
-            </div>
-          </div>
-        </div>
+            </span>
+          </button>
 
-        <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0">
-          <a className="nav-link" href="#projects">
+          <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
+          <a className="nav-link" href="#projects" onClick={(event) => handleSmoothNav(event, "projects")}>
             Projects
           </a>
-          <a className="nav-link" href="#experience">
+          <a className="nav-link" href="#experience" onClick={(event) => handleSmoothNav(event, "experience")}>
             Experience
           </a>
-          <a className="nav-link" href="#contact">
+          <a className="nav-link" href="#contact" onClick={(event) => handleSmoothNav(event, "contact")}>
             Contact
           </a>
+        </div>
         </div>
       </header>
 
