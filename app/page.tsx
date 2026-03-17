@@ -2,7 +2,43 @@
 
 import { ArrowUpRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+
+type ThemeId = "studio-dawn" | "midnight-gold" | "deep-ocean" | "charcoal-luxe";
+
+const themes: {
+  id: ThemeId;
+  name: string;
+  mood: string;
+  preview: string;
+}[] = [
+  {
+    id: "studio-dawn",
+    name: "Studio Dawn",
+    mood: "Warm editorial brightness",
+    preview: "linear-gradient(135deg, #ffd6a5 0%, #9ad6d0 55%, #eef3f7 100%)",
+  },
+  {
+    id: "midnight-gold",
+    name: "Midnight Gold",
+    mood: "Luxury executive depth",
+    preview: "linear-gradient(135deg, #0b0b0f 0%, #8b6f2e 45%, #e0b95b 100%)",
+  },
+  {
+    id: "deep-ocean",
+    name: "Deep Ocean Glass",
+    mood: "Premium tech with glass tones",
+    preview: "linear-gradient(135deg, #0f172a 0%, #1d4ed8 48%, #60a5fa 100%)",
+  },
+  {
+    id: "charcoal-luxe",
+    name: "Charcoal Minimal Luxe",
+    mood: "Quiet monochrome refinement",
+    preview: "linear-gradient(135deg, #111111 0%, #6b6762 52%, #d4cfc7 100%)",
+  },
+];
+
+const THEME_STORAGE_KEY = "modern-portfolio-theme";
 
 const featuredProjects = [
   {
@@ -54,6 +90,7 @@ type ContactFormData = {
 };
 
 export default function Home() {
+  const [themeIndex, setThemeIndex] = useState(0);
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -64,6 +101,27 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+
+  useEffect(() => {
+    const storedThemeId = window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeId | null;
+    const storedIndex = themes.findIndex((theme) => theme.id === storedThemeId);
+
+    if (storedIndex >= 0) {
+      setThemeIndex(storedIndex);
+    }
+  }, []);
+
+  useEffect(() => {
+    const activeTheme = themes[themeIndex];
+    document.documentElement.dataset.theme = activeTheme.id;
+    window.localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
+  }, [themeIndex]);
+
+  const currentTheme = themes[themeIndex];
+
+  const handleCycleTheme = () => {
+    setThemeIndex((prev) => (prev + 1) % themes.length);
+  };
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -122,11 +180,40 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,#ffd6a5_0%,rgba(255,214,165,0)_35%),radial-gradient(circle_at_85%_20%,#9ad6d0_0%,rgba(154,214,208,0)_30%),linear-gradient(120deg,#fbfbf8_0%,#f3f5ee_50%,#eef3f7_100%)]" />
+    <div className="theme-shell relative min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
+      <div className="theme-backdrop pointer-events-none absolute inset-0 -z-10" />
 
-      <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <p className="font-display text-base uppercase tracking-[0.12em] sm:text-lg">Chandu</p>
+      <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-4">
+            <button
+              type="button"
+              onClick={handleCycleTheme}
+              className="logo-toggle"
+              aria-label={`Switch theme. Current theme is ${currentTheme.name}`}
+            >
+              <span className="logo-wordmark">CHANDU</span>
+              <span className="logo-meta">
+                <span className="logo-meta-label">Tap to switch themes</span>
+                <span className="logo-meta-name">{currentTheme.name}</span>
+              </span>
+            </button>
+
+            <div className="theme-preview" aria-label={`Theme ${themeIndex + 1} of ${themes.length}: ${currentTheme.name}`}>
+              {themes.map((theme, index) => (
+                <span
+                  key={theme.id}
+                  className={`theme-swatch ${index === themeIndex ? "is-active" : ""}`}
+                  style={{ background: theme.preview }}
+                  title={theme.name}
+                />
+              ))}
+            </div>
+          </div>
+
+          <p className="theme-note text-sm">{currentTheme.mood}</p>
+        </div>
+
         <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0">
           <a className="nav-link" href="#projects">
             Projects
@@ -148,14 +235,17 @@ export default function Home() {
             transition={{ duration: 0.55 }}
             className="space-y-5 sm:space-y-6"
           >
-            <p className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.16em] shadow-sm ring-1 ring-black/5 backdrop-blur sm:px-4 sm:text-xs sm:tracking-[0.18em]">
-              <Sparkles size={14} />
-              Open For Opportunities
-            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <p className="eyebrow">
+                <Sparkles size={14} />
+                Open For Opportunities
+              </p>
+              <p className="theme-pill">Theme {themeIndex + 1} of {themes.length}</p>
+            </div>
             <h1 className="max-w-3xl text-balance font-display text-4xl leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
               I build polished digital products that ship fast and feel premium.
             </h1>
-            <p className="max-w-2xl text-sm leading-6 text-black/70 sm:text-base sm:leading-7 lg:text-lg">
+            <p className="text-muted max-w-2xl text-sm leading-6 sm:text-base sm:leading-7 lg:text-lg">
               Full-stack engineer focused on modern web architecture, product thinking, and performance-first execution.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
@@ -167,6 +257,9 @@ export default function Home() {
                 Let&apos;s Talk
               </a>
             </div>
+            <p className="text-soft text-sm">
+              Click the CHANDU mark to rotate through all four themes, including the current studio theme.
+            </p>
           </motion.div>
 
           <motion.aside
@@ -175,7 +268,7 @@ export default function Home() {
             transition={{ duration: 0.65, delay: 0.1 }}
             className="card space-y-5 md:self-stretch"
           >
-            <p className="text-xs uppercase tracking-[0.16em] text-black/60">Core Stack</p>
+            <p className="text-dim text-xs uppercase tracking-[0.16em]">Core Stack</p>
             <div className="flex flex-wrap gap-2.5">
               {[
                 "Next.js",
@@ -190,8 +283,18 @@ export default function Home() {
                 </span>
               ))}
             </div>
-            <div className="border-t border-black/10 pt-5">
-              <p className="text-sm text-black/60">Based in India · Available remotely worldwide</p>
+            <div className="section-divider pt-5">
+              <p className="text-muted text-sm">Based in India · Available remotely worldwide</p>
+            </div>
+            <div className="theme-card">
+              <p className="text-dim text-xs uppercase tracking-[0.16em]">Active Palette</p>
+              <div className="mt-3 flex items-center gap-3">
+                <span className="theme-card-preview" style={{ background: currentTheme.preview }} />
+                <div>
+                  <p className="font-display text-lg">{currentTheme.name}</p>
+                  <p className="text-soft text-sm">{currentTheme.mood}</p>
+                </div>
+              </div>
             </div>
           </motion.aside>
         </section>
@@ -210,7 +313,7 @@ export default function Home() {
               >
                 <div className="space-y-4">
                   <h3 className="font-display text-lg sm:text-xl">{project.title}</h3>
-                  <p className="text-sm leading-6 text-black/70">{project.description}</p>
+                  <p className="text-muted text-sm leading-6">{project.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {project.stack.map((tech) => (
                       <span key={tech} className="chip">
@@ -242,10 +345,10 @@ export default function Home() {
               >
                 <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
                   <h3 className="font-display text-lg sm:text-xl">{item.role}</h3>
-                  <span className="text-xs uppercase tracking-[0.12em] text-black/60">{item.period}</span>
+                  <span className="text-dim text-xs uppercase tracking-[0.12em]">{item.period}</span>
                 </div>
-                <p className="mb-3 text-sm font-semibold text-black/80">{item.company}</p>
-                <p className="text-sm leading-6 text-black/70">{item.impact}</p>
+                <p className="text-strong mb-3 text-sm font-semibold">{item.company}</p>
+                <p className="text-muted text-sm leading-6">{item.impact}</p>
               </motion.article>
             ))}
           </div>
@@ -255,7 +358,7 @@ export default function Home() {
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="font-display text-2xl sm:text-3xl">Contact Us</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-black/70">
+              <p className="text-muted mt-2 max-w-2xl text-sm leading-6">
                 Share your requirements and we&apos;ll send the inquiry straight to cchandhan021@gmail.com.
               </p>
             </div>
@@ -274,7 +377,7 @@ export default function Home() {
 
           <form onSubmit={handleSubmit} className="grid gap-4 sm:gap-5">
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+              <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Full Name *
                 <input
                   type="text"
@@ -286,7 +389,7 @@ export default function Home() {
                   placeholder="Your full name"
                 />
               </label>
-              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+              <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Email Address *
                 <input
                   type="email"
@@ -301,7 +404,7 @@ export default function Home() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+              <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Phone Number
                 <input
                   type="tel"
@@ -312,7 +415,7 @@ export default function Home() {
                   placeholder="Optional"
                 />
               </label>
-              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+              <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Subject *
                 <input
                   type="text"
@@ -326,7 +429,7 @@ export default function Home() {
               </label>
             </div>
 
-            <label className="space-y-1.5 text-sm font-semibold text-black/80">
+            <label className="text-strong space-y-1.5 text-sm font-semibold">
               Message *
               <textarea
                 name="message"
@@ -340,7 +443,7 @@ export default function Home() {
             </label>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <p className="text-xs text-black/60">Fields marked with * are required.</p>
+              <p className="text-dim text-xs">Fields marked with * are required.</p>
               <button type="submit" className="btn-primary w-full justify-center md:w-auto" disabled={isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send Message"}
                 <ArrowUpRight size={16} />
