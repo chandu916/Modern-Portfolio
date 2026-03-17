@@ -69,6 +69,29 @@ const stackViewByTheme: Record<ThemeId, StackViewId> = {
   "charcoal-luxe": "solar-system",
 };
 
+const starTrails = [
+  { left: "8%", top: "12%", delay: "0s", duration: "5.5s" },
+  { left: "18%", top: "26%", delay: "1s", duration: "6.2s" },
+  { left: "32%", top: "10%", delay: "1.8s", duration: "5.8s" },
+  { left: "44%", top: "22%", delay: "0.8s", duration: "6.6s" },
+  { left: "58%", top: "8%", delay: "2.1s", duration: "5.9s" },
+  { left: "72%", top: "18%", delay: "1.4s", duration: "6.4s" },
+  { left: "84%", top: "11%", delay: "2.8s", duration: "5.7s" },
+  { left: "92%", top: "28%", delay: "0.3s", duration: "6.1s" },
+  { left: "6%", top: "38%", delay: "1.2s", duration: "6.8s" },
+  { left: "16%", top: "46%", delay: "2.9s", duration: "6.1s" },
+  { left: "28%", top: "34%", delay: "0.6s", duration: "5.9s" },
+  { left: "39%", top: "44%", delay: "2.2s", duration: "6.5s" },
+  { left: "52%", top: "36%", delay: "1.5s", duration: "5.6s" },
+  { left: "66%", top: "43%", delay: "3.1s", duration: "6.3s" },
+  { left: "77%", top: "39%", delay: "1.9s", duration: "5.8s" },
+  { left: "90%", top: "47%", delay: "0.4s", duration: "6.2s" },
+  { left: "12%", top: "58%", delay: "2.6s", duration: "6.7s" },
+  { left: "34%", top: "62%", delay: "0.9s", duration: "6s" },
+  { left: "56%", top: "60%", delay: "1.7s", duration: "5.7s" },
+  { left: "78%", top: "64%", delay: "2.4s", duration: "6.4s" },
+];
+
 const timelineStages = [
   { title: "Foundation", items: ["HTML/CSS", "JavaScript", "React"] },
   { title: "Scale", items: ["Next.js", "TypeScript", "Node.js"] },
@@ -218,10 +241,29 @@ export default function Home() {
   };
 
   return (
-    <div className="theme-shell relative min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
-      <div className="theme-backdrop pointer-events-none absolute inset-0 -z-10" />
+    <div className={`theme-shell relative isolate min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10 ${currentTheme.id === "midnight-gold" ? "is-gold-galaxy" : ""}`}>
+      <div className="theme-backdrop pointer-events-none absolute inset-0 z-0" />
+      {currentTheme.id === "midnight-gold" ? (
+        <>
+          <div className="gold-galaxy-nebula pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
+          <div className="theme-stars pointer-events-none absolute inset-0 z-20" aria-hidden="true">
+            {starTrails.map((star, index) => (
+              <span
+                key={`star-${index}`}
+                className="theme-star"
+                style={{
+                  "--star-left": star.left,
+                  "--star-top": star.top,
+                  "--star-delay": star.delay,
+                  "--star-duration": star.duration,
+                } as React.CSSProperties}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
 
-      <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
+      <header className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-4">
             <button
@@ -259,7 +301,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
+      <main className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
         <section className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 18 }}

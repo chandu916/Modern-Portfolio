@@ -65,11 +65,11 @@ html[data-theme="midnight-gold"] {
   --input-focus: rgba(224, 185, 91, 0.7);
   --focus-ring: rgba(201, 161, 74, 0.14);
   --divider: rgba(201, 161, 74, 0.16);
-  --theme-one: rgba(201, 161, 74, 0.48);
-  --theme-two: rgba(139, 111, 46, 0.32);
-  --theme-gradient-start: #08080b;
-  --theme-gradient-mid: #0d0d12;
-  --theme-gradient-end: #16130d;
+  --theme-one: rgba(224, 185, 91, 0.26);
+  --theme-two: rgba(130, 96, 34, 0.24);
+  --theme-gradient-start: #040406;
+  --theme-gradient-mid: #0b0b13;
+  --theme-gradient-end: #120f0a;
   --font-body: var(--font-poppins);
   --font-heading: var(--font-playfair-display);
 }
@@ -189,6 +189,115 @@ body {
     radial-gradient(circle at 85% 20%, var(--theme-two) 0%, transparent 30%),
     linear-gradient(120deg, var(--theme-gradient-start) 0%, var(--theme-gradient-mid) 50%, var(--theme-gradient-end) 100%);
   transition: background 320ms ease;
+}
+
+.theme-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 60% 28%, color-mix(in srgb, var(--theme-one) 56%, transparent) 0%, transparent 56%),
+    linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--theme-gradient-end) 28%, transparent) 66%, color-mix(in srgb, var(--theme-gradient-end) 48%, transparent) 100%);
+  pointer-events: none;
+}
+
+.theme-stars {
+  opacity: 1;
+  transition: opacity 260ms ease;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(2px 2px at 8% 14%, rgba(255, 233, 170, 0.5), transparent),
+    radial-gradient(2px 2px at 22% 28%, rgba(255, 233, 170, 0.45), transparent),
+    radial-gradient(1.6px 1.6px at 38% 18%, rgba(255, 233, 170, 0.4), transparent),
+    radial-gradient(1.8px 1.8px at 52% 30%, rgba(255, 233, 170, 0.45), transparent),
+    radial-gradient(2px 2px at 72% 20%, rgba(255, 233, 170, 0.42), transparent),
+    radial-gradient(1.8px 1.8px at 86% 32%, rgba(255, 233, 170, 0.4), transparent),
+    radial-gradient(1.6px 1.6px at 14% 56%, rgba(255, 233, 170, 0.35), transparent),
+    radial-gradient(1.8px 1.8px at 48% 62%, rgba(255, 233, 170, 0.35), transparent),
+    radial-gradient(2px 2px at 78% 58%, rgba(255, 233, 170, 0.38), transparent);
+}
+
+.theme-stars::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 12%, rgba(255, 248, 220, 0.95), transparent),
+    radial-gradient(1.4px 1.4px at 26% 36%, rgba(255, 248, 220, 0.85), transparent),
+    radial-gradient(1.6px 1.6px at 42% 16%, rgba(255, 248, 220, 0.9), transparent),
+    radial-gradient(1.5px 1.5px at 58% 34%, rgba(255, 248, 220, 0.86), transparent),
+    radial-gradient(1.6px 1.6px at 72% 14%, rgba(255, 248, 220, 0.92), transparent),
+    radial-gradient(1.4px 1.4px at 88% 30%, rgba(255, 248, 220, 0.88), transparent),
+    radial-gradient(1.5px 1.5px at 20% 56%, rgba(255, 248, 220, 0.8), transparent),
+    radial-gradient(1.4px 1.4px at 44% 64%, rgba(255, 248, 220, 0.78), transparent),
+    radial-gradient(1.5px 1.5px at 70% 58%, rgba(255, 248, 220, 0.82), transparent);
+  animation: twinkleField 2.8s ease-in-out infinite alternate;
+}
+
+.gold-galaxy-nebula {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 214, 129, 0.32) 0%, transparent 38%),
+    radial-gradient(circle at 74% 20%, rgba(224, 185, 91, 0.28) 0%, transparent 35%),
+    radial-gradient(circle at 48% 44%, rgba(95, 67, 25, 0.32) 0%, transparent 44%),
+    linear-gradient(to bottom, rgba(12, 10, 18, 0.1) 0%, rgba(7, 6, 11, 0.34) 62%, rgba(5, 5, 8, 0.5) 100%);
+}
+
+.theme-star {
+  position: absolute;
+  left: var(--star-left);
+  top: var(--star-top);
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 999px;
+  background: rgba(255, 245, 204, 0.98);
+  box-shadow: 0 0 14px rgba(224, 185, 91, 0.72);
+  transform: translate3d(0, 0, 0);
+  opacity: 0;
+  animation: starFall var(--star-duration) linear var(--star-delay) infinite;
+}
+
+.theme-star::after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 7rem;
+  height: 2px;
+  transform-origin: right center;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, rgba(255, 223, 132, 0), rgba(255, 223, 132, 0.92));
+}
+
+.theme-shell.is-gold-galaxy .theme-stars {
+  opacity: 1;
+}
+
+@keyframes starFall {
+  0% {
+    transform: translate3d(-240px, -72px, 0) rotate(35deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(250px, 255px, 0) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes twinkleField {
+  0% {
+    opacity: 0.55;
+    filter: brightness(0.95);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
 }
 
 .card {
