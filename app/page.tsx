@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 const featuredProjects = [
   {
@@ -44,7 +45,72 @@ const experience = [
   },
 ];
 
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+};
+
 export default function Home() {
+  const [formData, setFormData] = useState<ContactFormData>({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitMessage, setSubmitMessage] = useState("");
+
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+    setSubmitMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Unable to send your message right now.");
+      }
+
+      setSubmitStatus("success");
+      setSubmitMessage("Thanks! Your message has been sent successfully.");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong.";
+      setSubmitStatus("error");
+      setSubmitMessage(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden px-6 pb-20 pt-8 sm:px-10">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,#ffd6a5_0%,rgba(255,214,165,0)_35%),radial-gradient(circle_at_85%_20%,#9ad6d0_0%,rgba(154,214,208,0)_30%),linear-gradient(120deg,#fbfbf8_0%,#f3f5ee_50%,#eef3f7_100%)]" />
@@ -175,22 +241,114 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" className="card flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-display text-3xl">Let&apos;s build something excellent.</h2>
-            <p className="mt-2 text-sm text-black/70">Available for freelance, full-time, and high-impact product roles.</p>
+        <section id="contact" className="card space-y-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-display text-3xl">Contact Us</h2>
+              <p className="mt-2 text-sm text-black/70">
+                Share your requirements and we&apos;ll notify you by email when a new inquiry comes in.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a className="icon-btn" href="mailto:cchandhan021@gmail.com" aria-label="Email">
+                <Mail size={18} />
+              </a>
+              <a className="icon-btn" href="https://github.com/chandu916" target="_blank" rel="noreferrer" aria-label="GitHub">
+                <Github size={18} />
+              </a>
+              <a className="icon-btn" href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <Linkedin size={18} />
+              </a>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <a className="icon-btn" href="mailto:hello@yourdomain.com" aria-label="Email">
-              <Mail size={18} />
-            </a>
-            <a className="icon-btn" href="https://github.com/chandu916" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Github size={18} />
-            </a>
-            <a className="icon-btn" href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-              <Linkedin size={18} />
-            </a>
-          </div>
+
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+                Full Name *
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="input-field"
+                  placeholder="Your full name"
+                />
+              </label>
+              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+                Email Address *
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="input-field"
+                  placeholder="you@example.com"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+                Phone Number
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="input-field"
+                  placeholder="Optional"
+                />
+              </label>
+              <label className="space-y-1.5 text-sm font-semibold text-black/80">
+                Subject *
+                <input
+                  type="text"
+                  name="subject"
+                  required
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  className="input-field"
+                  placeholder="What can we help with?"
+                />
+              </label>
+            </div>
+
+            <label className="space-y-1.5 text-sm font-semibold text-black/80">
+              Message *
+              <textarea
+                name="message"
+                required
+                minLength={10}
+                value={formData.message}
+                onChange={handleInputChange}
+                className="input-field min-h-32 resize-y"
+                placeholder="Tell us about your requirement"
+              />
+            </label>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-black/60">Fields marked with * are required.</p>
+              <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send Message"}
+                <ArrowUpRight size={16} />
+              </button>
+            </div>
+
+            {submitStatus !== "idle" ? (
+              <p
+                className={`rounded-xl px-3 py-2 text-sm ${
+                  submitStatus === "success"
+                    ? "border border-emerald-300 bg-emerald-50 text-emerald-700"
+                    : "border border-red-300 bg-red-50 text-red-700"
+                }`}
+              >
+                {submitMessage}
+              </p>
+            ) : null}
+          </form>
         </section>
       </main>
     </div>
