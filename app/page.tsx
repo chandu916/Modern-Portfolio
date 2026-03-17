@@ -241,12 +241,12 @@ export default function Home() {
   };
 
   return (
-    <div className={`theme-shell relative isolate min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10 ${currentTheme.id === "midnight-gold" ? "is-gold-galaxy" : ""}`}>
-      <div className="theme-backdrop pointer-events-none absolute inset-0 z-0" />
+    <div className={`theme-shell page-root relative isolate ${currentTheme.id === "midnight-gold" ? "is-gold-galaxy" : ""}`}>
+      <div className="theme-backdrop pointer-events-none fixed inset-0 z-0" />
       {currentTheme.id === "midnight-gold" ? (
         <>
-          <div className="gold-galaxy-nebula pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
-          <div className="theme-stars pointer-events-none absolute inset-0 z-20" aria-hidden="true">
+          <div className="gold-galaxy-nebula pointer-events-none fixed inset-0 z-10" aria-hidden="true" />
+          <div className="theme-stars pointer-events-none fixed inset-0 z-20" aria-hidden="true">
             {starTrails.map((star, index) => (
               <span
                 key={`star-${index}`}
@@ -263,7 +263,8 @@ export default function Home() {
         </>
       ) : null}
 
-      <header className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
+      <header className="page-nav">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4 md:px-8 lg:px-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-4">
             <button
@@ -289,20 +290,22 @@ export default function Home() {
         </div>
 
         <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0">
-          <a className="nav-link" href="#projects">
+          <button type="button" className="nav-link" onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}>
             Projects
-          </a>
-          <a className="nav-link" href="#experience">
+          </button>
+          <button type="button" className="nav-link" onClick={() => document.getElementById("experience")?.scrollIntoView({ behavior: "smooth" })}>
             Experience
-          </a>
-          <a className="nav-link" href="#contact">
+          </button>
+          <button type="button" className="nav-link" onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}>
             Contact
-          </a>
+          </button>
+        </div>
         </div>
       </header>
 
-      <main className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
-        <section className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
+      <section className="page-section" id="home">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10">
+          <div className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -323,13 +326,13 @@ export default function Home() {
               Full-stack engineer focused on modern web architecture, product thinking, and performance-first execution.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-              <a className="btn-primary w-full justify-center sm:w-auto" href="#projects">
+              <button type="button" className="btn-primary w-full justify-center sm:w-auto" onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}>
                 View Work
                 <ArrowUpRight size={16} />
-              </a>
-              <a className="btn-secondary w-full justify-center sm:w-auto" href="#contact">
+              </button>
+              <button type="button" className="btn-secondary w-full justify-center sm:w-auto" onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}>
                 Let&apos;s Talk
-              </a>
+              </button>
             </div>
             <p className="text-soft text-sm">
               Click the CHANDU mark to rotate through all four themes, including the current studio theme.
@@ -500,9 +503,18 @@ export default function Home() {
               <p className="text-muted text-sm">Based in India · Available remotely worldwide</p>
             </div>
           </motion.aside>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <section id="projects" className="space-y-5 sm:space-y-6">
+      <section className="page-section" id="projects">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10 space-y-5 sm:space-y-6"
+        >
           <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Projects</h2>
           <div className="grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
             {featuredProjects.map((project, index) => (
@@ -510,7 +522,7 @@ export default function Home() {
                 key={project.title}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
                 className="card flex h-full flex-col justify-between gap-5"
               >
@@ -532,9 +544,17 @@ export default function Home() {
               </motion.article>
             ))}
           </div>
-        </section>
+        </motion.div>
+      </section>
 
-        <section id="experience" className="space-y-5 sm:space-y-6">
+      <section className="page-section" id="experience">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10 space-y-5 sm:space-y-6"
+        >
           <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
           <div className="grid gap-4 lg:grid-cols-2">
             {experience.map((item, index) => (
@@ -542,7 +562,7 @@ export default function Home() {
                 key={item.role}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
                 className="card"
               >
@@ -555,9 +575,18 @@ export default function Home() {
               </motion.article>
             ))}
           </div>
-        </section>
+        </motion.div>
+      </section>
 
-        <section id="contact" className="card space-y-6 sm:space-y-8">
+      <section className="page-section" id="contact">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 lg:px-10"
+        >
+          <div className="card space-y-6 sm:space-y-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="font-display text-2xl sm:text-3xl">Contact Us</h2>
@@ -665,8 +694,9 @@ export default function Home() {
               </p>
             ) : null}
           </form>
-        </section>
-      </main>
+          </div>
+        </motion.div>
+      </section>
     </div>
   );
 }
