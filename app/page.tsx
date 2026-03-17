@@ -122,12 +122,12 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 pb-20 pt-8 sm:px-10">
+    <div className="relative min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_10%,#ffd6a5_0%,rgba(255,214,165,0)_35%),radial-gradient(circle_at_85%_20%,#9ad6d0_0%,rgba(154,214,208,0)_30%),linear-gradient(120deg,#fbfbf8_0%,#f3f5ee_50%,#eef3f7_100%)]" />
 
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between py-4">
-        <p className="font-display text-lg uppercase tracking-[0.12em]">Chandu</p>
-        <div className="flex items-center gap-4 text-sm">
+      <header className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <p className="font-display text-base uppercase tracking-[0.12em] sm:text-lg">Chandu</p>
+        <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0">
           <a className="nav-link" href="#projects">
             Projects
           </a>
@@ -140,30 +140,30 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-16">
-        <section className="grid gap-10 pb-4 pt-10 md:grid-cols-[1.2fr_0.8fr] md:items-end">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
+        <section className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="space-y-6"
+            className="space-y-5 sm:space-y-6"
           >
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-1.5 text-xs uppercase tracking-[0.18em] shadow-sm ring-1 ring-black/5 backdrop-blur">
+            <p className="inline-flex max-w-full items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.16em] shadow-sm ring-1 ring-black/5 backdrop-blur sm:px-4 sm:text-xs sm:tracking-[0.18em]">
               <Sparkles size={14} />
               Open For Opportunities
             </p>
-            <h1 className="max-w-3xl font-display text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-3xl text-balance font-display text-4xl leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
               I build polished digital products that ship fast and feel premium.
             </h1>
-            <p className="max-w-xl text-base text-black/70 sm:text-lg">
+            <p className="max-w-2xl text-sm leading-6 text-black/70 sm:text-base sm:leading-7 lg:text-lg">
               Full-stack engineer focused on modern web architecture, product thinking, and performance-first execution.
             </p>
-            <div className="flex flex-wrap items-center gap-4">
-              <a className="btn-primary" href="#projects">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              <a className="btn-primary w-full justify-center sm:w-auto" href="#projects">
                 View Work
                 <ArrowUpRight size={16} />
               </a>
-              <a className="btn-secondary" href="#contact">
+              <a className="btn-secondary w-full justify-center sm:w-auto" href="#contact">
                 Let&apos;s Talk
               </a>
             </div>
@@ -173,10 +173,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.1 }}
-            className="card space-y-5"
+            className="card space-y-5 md:self-stretch"
           >
             <p className="text-xs uppercase tracking-[0.16em] text-black/60">Core Stack</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2.5">
               {[
                 "Next.js",
                 "TypeScript",
@@ -196,9 +196,9 @@ export default function Home() {
           </motion.aside>
         </section>
 
-        <section id="projects" className="space-y-6">
-          <h2 className="font-display text-3xl sm:text-4xl">Featured Projects</h2>
-          <div className="grid gap-5 md:grid-cols-3">
+        <section id="projects" className="space-y-5 sm:space-y-6">
+          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Projects</h2>
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
             {featuredProjects.map((project, index) => (
               <motion.article
                 key={project.title}
@@ -206,11 +206,11 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="card flex h-full flex-col justify-between gap-6"
+                className="card flex h-full flex-col justify-between gap-5"
               >
                 <div className="space-y-4">
-                  <h3 className="font-display text-xl">{project.title}</h3>
-                  <p className="text-sm text-black/70">{project.description}</p>
+                  <h3 className="font-display text-lg sm:text-xl">{project.title}</h3>
+                  <p className="text-sm leading-6 text-black/70">{project.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {project.stack.map((tech) => (
                       <span key={tech} className="chip">
@@ -219,7 +219,7 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-                <a href={project.link} className="inline-flex items-center gap-2 text-sm font-semibold">
+                <a href={project.link} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold">
                   Case Study
                   <ArrowUpRight size={15} />
                 </a>
@@ -228,9 +228,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="experience" className="space-y-6">
-          <h2 className="font-display text-3xl sm:text-4xl">Experience</h2>
-          <div className="grid gap-4">
+        <section id="experience" className="space-y-5 sm:space-y-6">
+          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
+          <div className="grid gap-4 lg:grid-cols-2">
             {experience.map((item, index) => (
               <motion.article
                 key={item.role}
@@ -240,26 +240,26 @@ export default function Home() {
                 transition={{ duration: 0.35, delay: index * 0.08 }}
                 className="card"
               >
-                <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-                  <h3 className="font-display text-xl">{item.role}</h3>
+                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
+                  <h3 className="font-display text-lg sm:text-xl">{item.role}</h3>
                   <span className="text-xs uppercase tracking-[0.12em] text-black/60">{item.period}</span>
                 </div>
                 <p className="mb-3 text-sm font-semibold text-black/80">{item.company}</p>
-                <p className="text-sm text-black/70">{item.impact}</p>
+                <p className="text-sm leading-6 text-black/70">{item.impact}</p>
               </motion.article>
             ))}
           </div>
         </section>
 
-        <section id="contact" className="card space-y-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <section id="contact" className="card space-y-6 sm:space-y-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="font-display text-3xl">Contact Us</h2>
-              <p className="mt-2 text-sm text-black/70">
+              <h2 className="font-display text-2xl sm:text-3xl">Contact Us</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-black/70">
                 Share your requirements and we&apos;ll send the inquiry straight to cchandhan021@gmail.com.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <a className="icon-btn" href="mailto:cchandhan021@gmail.com" aria-label="Email">
                 <Mail size={18} />
               </a>
@@ -272,8 +272,8 @@ export default function Home() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+          <form onSubmit={handleSubmit} className="grid gap-4 sm:gap-5">
+            <div className="grid gap-4 md:grid-cols-2">
               <label className="space-y-1.5 text-sm font-semibold text-black/80">
                 Full Name *
                 <input
@@ -300,7 +300,7 @@ export default function Home() {
               </label>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <label className="space-y-1.5 text-sm font-semibold text-black/80">
                 Phone Number
                 <input
@@ -339,9 +339,9 @@ export default function Home() {
               />
             </label>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <p className="text-xs text-black/60">Fields marked with * are required.</p>
-              <button type="submit" className="btn-primary" disabled={isSubmitting}>
+              <button type="submit" className="btn-primary w-full justify-center md:w-auto" disabled={isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send Message"}
                 <ArrowUpRight size={16} />
               </button>
