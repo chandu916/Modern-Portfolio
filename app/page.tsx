@@ -79,12 +79,22 @@ export default function Home() {
     setSubmitMessage("");
 
     try {
-      const response = await fetch("/api/contact", {
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("email", formData.email);
+      payload.append("phone", formData.phone);
+      payload.append("subject", formData.subject);
+      payload.append("message", formData.message);
+      payload.append("_subject", `[Portfolio Contact] ${formData.subject}`);
+      payload.append("_captcha", "false");
+      payload.append("_template", "table");
+
+      const response = await fetch("https://formsubmit.co/ajax/cchandhan021@gmail.com", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: JSON.stringify(formData),
+        body: payload,
       });
 
       const data = await response.json();
@@ -94,7 +104,7 @@ export default function Home() {
       }
 
       setSubmitStatus("success");
-      setSubmitMessage("Thanks! Your message has been sent successfully.");
+      setSubmitMessage("Thanks! Your message has been sent successfully. Check your inbox to confirm FormSubmit activation the first time.");
       setFormData({
         name: "",
         email: "",
@@ -246,7 +256,7 @@ export default function Home() {
             <div>
               <h2 className="font-display text-3xl">Contact Us</h2>
               <p className="mt-2 text-sm text-black/70">
-                Share your requirements and we&apos;ll notify you by email when a new inquiry comes in.
+                Share your requirements and we&apos;ll send the inquiry straight to cchandhan021@gmail.com.
               </p>
             </div>
             <div className="flex items-center gap-3">

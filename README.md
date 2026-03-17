@@ -29,24 +29,27 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on GitHub Pages
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is configured for static export and automatic deployment to GitHub Pages.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Expected production URL:
+
+`https://chandu916.github.io/Modern-Portfolio/`
+
+Deployment is handled by:
+
+- `.github/workflows/deploy-pages.yml`
+- `next.config.ts` with GitHub Pages base path and static export enabled
+
+If Pages is not already enabled in repository settings, set the source to `GitHub Actions` once.
 
 ## Contact Form Email Setup
 
-The Contact Us form sends notification emails to `cchandhan021@gmail.com` through SMTP.
+The Contact Us form is configured for GitHub Pages and submits through FormSubmit, which forwards inquiries to `cchandhan021@gmail.com`.
 
-1. Copy `.env.example` to `.env.local`.
-2. Fill in these variables with your SMTP provider details:
-   - `SMTP_HOST`
-   - `SMTP_PORT`
-   - `SMTP_USER`
-   - `SMTP_PASS`
-   - `CONTACT_FROM_EMAIL`
-   - `CONTACT_TO_EMAIL`
-3. Restart the dev server after updating env values.
+Important note:
 
-For Gmail, use your Gmail address for `SMTP_USER` and generate an app password for `SMTP_PASS`.
+- The first submission to the form will trigger a FormSubmit activation email. You must confirm that email once before notifications start arriving normally.
+
+After activation, inquiries from the deployed site will be forwarded to your Gmail inbox without needing a server.
