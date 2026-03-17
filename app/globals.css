@@ -948,10 +948,22 @@ body {
   stroke-dasharray: 4 5;
 }
 
+.radar-point {
+  fill: color-mix(in srgb, var(--button-fill) 80%, white 20%);
+}
+
+.radar-point-glow {
+  fill: color-mix(in srgb, var(--button-fill) 30%, transparent);
+}
+
+.radar-point-secondary {
+  fill: color-mix(in srgb, var(--secondary-text) 78%, white 22%);
+}
+
 .radar-labels {
   position: absolute;
   inset: 0;
-  font-size: 0.62rem;
+  font-size: clamp(0.56rem, 1.5vw, 0.62rem);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--soft);
@@ -1064,10 +1076,11 @@ body {
 
   .stack-scene {
     justify-items: start;
+    padding: 0.3rem;
   }
 
   .stack-scene > div {
-    width: 22.5rem;
+    width: min(100%, 20.5rem);
   }
 
   .stack-node {
@@ -1092,5 +1105,71 @@ body {
   .orbit-ring-inner {
     width: 9.8rem;
     height: 9.8rem;
+  }
+
+  .solar-shell,
+  .timeline-shell,
+  .radar-shell {
+    min-height: 16.6rem;
+  }
+
+  .solar-core {
+    width: 4.9rem;
+    height: 4.9rem;
+    font-size: 0.65rem;
+  }
+
+  .solar-planet {
+    font-size: 0.56rem;
+    padding: 0.32rem 0.5rem;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 0.55rem;
+  }
+
+  .timeline-rail {
+    left: 0.7rem;
+    right: auto;
+    top: 1rem;
+    bottom: 1rem;
+    width: 2px;
+    height: auto;
+    transform: none;
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--button-fill) 30%, transparent), color-mix(in srgb, var(--button-fill) 70%, transparent));
+  }
+
+  .timeline-stage {
+    margin-left: 0.7rem;
+    padding: 0.6rem;
+  }
+
+  .timeline-title {
+    font-size: 0.66rem;
+  }
+
+  .timeline-chip {
+    font-size: 0.54rem;
+  }
+
+  .radar-labels span:nth-child(1) { left: 47%; top: 7%; }
+  .radar-labels span:nth-child(2) { right: 8%; top: 24%; }
+  .radar-labels span:nth-child(3) { right: 8%; top: 58%; }
+  .radar-labels span:nth-child(4) { left: 45%; bottom: 8%; }
+  .radar-labels span:nth-child(5) { left: 7%; top: 58%; }
+  .radar-labels span:nth-child(6) { left: 8%; top: 24%; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .stack-scene > div {
+    width: min(100%, 21.5rem);
+  }
+
+  .solar-shell,
+  .timeline-shell,
+  .radar-shell {
+    min-height: 17.3rem;
   }
 }

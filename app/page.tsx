@@ -371,8 +371,75 @@ export default function Home() {
                     <polygon points="130,26 212,70 212,150 130,194 48,150 48,70" className="radar-grid" />
                     <polygon points="130,52 188,82 188,138 130,170 72,138 72,82" className="radar-grid" />
                     <polygon points="130,72 172,94 172,126 130,148 88,126 88,94" className="radar-grid" />
-                    <polygon points="130,44 194,78 180,140 130,164 82,132 90,88" className="radar-shape current" />
-                    <polygon points="130,36 204,72 200,148 130,178 72,144 76,78" className="radar-shape target" />
+                    <motion.polygon
+                      className="radar-shape current"
+                      points="130,44 194,78 180,140 130,164 82,132 90,88"
+                      animate={{
+                        points: [
+                          "130,44 194,78 180,140 130,164 82,132 90,88",
+                          "130,36 204,72 200,148 130,178 72,144 76,78",
+                          "130,38 204,74 200,150 130,180 72,146 76,80",
+                          "130,44 194,78 180,140 130,164 82,132 90,88",
+                        ],
+                      }}
+                      transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    <motion.polygon
+                      className="radar-shape target"
+                      points="130,36 204,72 200,148 130,178 72,144 76,78"
+                      animate={{
+                        points: [
+                          "130,36 204,72 200,148 130,178 72,144 76,78",
+                          "130,38 204,74 200,150 130,180 72,146 76,80",
+                          "130,36 204,72 200,148 130,178 72,144 76,78",
+                        ],
+                      }}
+                      transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                    />
+
+                    {[
+                      { current: { x: 130, y: 44 }, target: { x: 130, y: 36 } },
+                      { current: { x: 194, y: 78 }, target: { x: 204, y: 72 } },
+                      { current: { x: 180, y: 140 }, target: { x: 200, y: 148 } },
+                      { current: { x: 130, y: 164 }, target: { x: 130, y: 178 } },
+                      { current: { x: 82, y: 132 }, target: { x: 72, y: 144 } },
+                      { current: { x: 90, y: 88 }, target: { x: 76, y: 78 } },
+                    ].map((pointPair, index) => (
+                      <motion.g key={`radar-travel-${index}`}>
+                        <motion.circle
+                          className="radar-point-glow"
+                          cx={pointPair.current.x}
+                          cy={pointPair.current.y}
+                          r="7"
+                          animate={{
+                            cx: [pointPair.current.x, pointPair.target.x, pointPair.target.x, pointPair.current.x],
+                            cy: [pointPair.current.y, pointPair.target.y, pointPair.target.y + 2, pointPair.current.y],
+                            opacity: [0.4, 0.9, 0.7, 0.4],
+                          }}
+                          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                        <motion.circle
+                          className="radar-point"
+                          cx={pointPair.current.x}
+                          cy={pointPair.current.y}
+                          r="3.1"
+                          animate={{
+                            cx: [pointPair.current.x, pointPair.target.x, pointPair.target.x, pointPair.current.x],
+                            cy: [pointPair.current.y, pointPair.target.y, pointPair.target.y + 2, pointPair.current.y],
+                            opacity: [0.75, 1, 0.85, 0.75],
+                          }}
+                          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                        <motion.circle
+                          className="radar-point-secondary"
+                          cx={pointPair.target.x}
+                          cy={pointPair.target.y}
+                          r="2"
+                          animate={{ opacity: [0.15, 0.5, 0.15] }}
+                          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                      </motion.g>
+                    ))}
                   </svg>
                   <div className="radar-labels">
                     <span>UI</span>
