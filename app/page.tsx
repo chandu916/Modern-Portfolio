@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { ChangeEvent, FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
@@ -155,6 +155,63 @@ const experience = [
   },
 ];
 
+const teamMembers = [
+  {
+    name: "Aarav Sharma",
+    role: "Product Engineer",
+    tag: "Frontend Systems",
+    image: "https://i.pravatar.cc/640?img=12",
+    bio: "Builds polished, accessible UI systems and keeps product quality high from concept to release.",
+    linkedin: "https://linkedin.com/in/aarav-sharma",
+    email: "aarav@yourcompany.com",
+  },
+  {
+    name: "Meera Nair",
+    role: "Full-Stack Developer",
+    tag: "API + Integrations",
+    image: "https://i.pravatar.cc/640?img=45",
+    bio: "Owns backend services, integrations, and reliability patterns for high-traffic user workflows.",
+    linkedin: "https://linkedin.com/in/meera-nair",
+    email: "meera@yourcompany.com",
+  },
+  {
+    name: "Rahul Verma",
+    role: "Cloud Engineer",
+    tag: "Azure + DevOps",
+    image: "https://i.pravatar.cc/640?img=16",
+    bio: "Designs scalable cloud infrastructure, observability, and deployment pipelines for fast delivery.",
+    linkedin: "https://linkedin.com/in/rahul-verma",
+    email: "rahul@yourcompany.com",
+  },
+  {
+    name: "Isha Kapoor",
+    role: "UX Engineer",
+    tag: "Interaction Design",
+    image: "https://i.pravatar.cc/640?img=32",
+    bio: "Transforms user research into clear interfaces, micro-interactions, and friction-free journeys.",
+    linkedin: "https://linkedin.com/in/isha-kapoor",
+    email: "isha@yourcompany.com",
+  },
+  {
+    name: "Karan Patel",
+    role: "Data Engineer",
+    tag: "Analytics Platform",
+    image: "https://i.pravatar.cc/640?img=53",
+    bio: "Creates event pipelines and data models that power decision-making, reporting, and product insights.",
+    linkedin: "https://linkedin.com/in/karan-patel",
+    email: "karan@yourcompany.com",
+  },
+  {
+    name: "Nisha Reddy",
+    role: "AI Engineer",
+    tag: "LLM Experiences",
+    image: "https://i.pravatar.cc/640?img=25",
+    bio: "Builds AI-assisted experiences with careful prompt design, evaluation loops, and safe rollout plans.",
+    linkedin: "https://linkedin.com/in/nisha-reddy",
+    email: "nisha@yourcompany.com",
+  },
+];
+
 type ContactFormData = {
   name: string;
   email: string;
@@ -165,6 +222,8 @@ type ContactFormData = {
 
 export default function Home() {
   const [themeIndex, setThemeIndex] = useState(0);
+  const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+  const [activeTeamIndex, setActiveTeamIndex] = useState(0);
   const [logoSpark, setLogoSpark] = useState({ x: 50, y: 50, active: false, burstKey: 0 });
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
@@ -177,12 +236,26 @@ export default function Home() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
   const sparkResetTimer = useRef<number | null>(null);
+  const teamCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
       if (sparkResetTimer.current !== null) {
         window.clearTimeout(sparkResetTimer.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsHeaderScrolled(window.scrollY > 12);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -201,12 +274,88 @@ export default function Home() {
     window.localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
   }, [themeIndex]);
 
+  useEffect(() => {
+    const carousel = teamCarouselRef.current;
+    if (!carousel) {
+      return;
+    }
+
+    const updateActiveIndex = () => {
+      const firstCard = carousel.querySelector<HTMLElement>(".team-card");
+      if (!firstCard) {
+        return;
+      }
+
+      const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
+      const stride = firstCard.offsetWidth + gap;
+      if (stride <= 0) {
+        return;
+      }
+
+      const rawIndex = Math.round(carousel.scrollLeft / stride);
+      const normalizedIndex = Math.max(0, Math.min(teamMembers.length - 1, rawIndex));
+      setActiveTeamIndex(normalizedIndex);
+    };
+
+    updateActiveIndex();
+    carousel.addEventListener("scroll", updateActiveIndex, { passive: true });
+    window.addEventListener("resize", updateActiveIndex);
+
+    return () => {
+      carousel.removeEventListener("scroll", updateActiveIndex);
+      window.removeEventListener("resize", updateActiveIndex);
+    };
+  }, []);
+
   const currentTheme = themes[themeIndex];
   const currentStackId = stackViewByTheme[currentTheme.id];
   const currentStackView = stackViews.find((view) => view.id === currentStackId) ?? stackViews[0];
 
   const handleCycleTheme = () => {
     setThemeIndex((prev) => (prev + 1) % themes.length);
+  };
+
+  const scrollToTeamIndex = (index: number) => {
+    const carousel = teamCarouselRef.current;
+    if (!carousel) {
+      return;
+    }
+
+    const firstCard = carousel.querySelector<HTMLElement>(".team-card");
+    if (!firstCard) {
+      return;
+    }
+
+    const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
+    const stride = firstCard.offsetWidth + gap;
+    if (stride <= 0) {
+      return;
+    }
+
+    const clampedIndex = Math.max(0, Math.min(teamMembers.length - 1, index));
+    carousel.scrollTo({
+      left: clampedIndex * stride,
+      behavior: "smooth",
+    });
+    setActiveTeamIndex(clampedIndex);
+  };
+
+  const handleNextTeam = () => {
+    if (teamMembers.length === 0) {
+      return;
+    }
+
+    const nextIndex = activeTeamIndex >= teamMembers.length - 1 ? 0 : activeTeamIndex + 1;
+    scrollToTeamIndex(nextIndex);
+  };
+
+  const handlePrevTeam = () => {
+    if (teamMembers.length === 0) {
+      return;
+    }
+
+    const prevIndex = activeTeamIndex <= 0 ? teamMembers.length - 1 : activeTeamIndex - 1;
+    scrollToTeamIndex(prevIndex);
   };
 
   const handleSmoothNav = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
@@ -352,7 +501,8 @@ export default function Home() {
         </>
       ) : null}
 
-      <header className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
+      <header className={`site-header ${isHeaderScrolled ? "is-scrolled" : ""}`}>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <button
             type="button"
@@ -409,14 +559,18 @@ export default function Home() {
           <a className="nav-link" href="#experience" onClick={(event) => handleSmoothNav(event, "experience")}>
             Experience
           </a>
+          <a className="nav-link" href="#team" onClick={(event) => handleSmoothNav(event, "team")}>
+            Team
+          </a>
           <a className="nav-link" href="#contact" onClick={(event) => handleSmoothNav(event, "contact")}>
             Contact
           </a>
         </div>
         </div>
+        </div>
       </header>
 
-      <main className="relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
+      <main className="site-main relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
         <section className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -668,6 +822,80 @@ export default function Home() {
                 <p className="text-strong mb-3 text-sm font-semibold">{item.company}</p>
                 <p className="text-muted text-sm leading-6">{item.impact}</p>
               </motion.article>
+            ))}
+          </div>
+        </section>
+
+        <section id="team" className="space-y-5 sm:space-y-6">
+          <div className="space-y-2">
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Our Team</h2>
+            <p className="text-muted max-w-3xl text-sm leading-6 sm:text-base">
+              Meet the people behind our product delivery. Hover on each profile card to view details and contact options.
+            </p>
+            <p className="text-soft text-xs uppercase tracking-[0.12em]">Scroll horizontally to view more profiles</p>
+          </div>
+
+          <div className="team-controls" aria-label="Team carousel controls">
+            <button type="button" className="team-nav-btn" onClick={handlePrevTeam} aria-label="Show previous profile">
+              <ChevronLeft size={18} />
+            </button>
+
+            <div className="team-dots" role="tablist" aria-label="Team profile positions">
+              {teamMembers.map((member, index) => (
+                <button
+                  key={`team-dot-${member.email}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTeamIndex === index}
+                  aria-label={`Go to profile ${index + 1}: ${member.name}`}
+                  className={`team-dot ${activeTeamIndex === index ? "is-active" : ""}`}
+                  onClick={() => scrollToTeamIndex(index)}
+                />
+              ))}
+            </div>
+
+            <button type="button" className="team-nav-btn" onClick={handleNextTeam} aria-label="Show next profile">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          <div ref={teamCarouselRef} className="team-carousel scrollbar-none" aria-label="Team profiles carousel">
+            {teamMembers.map((member) => (
+              <article key={member.email} className="team-card" tabIndex={0}>
+                <div className="team-card-inner">
+                  <div className="team-card-face team-card-front">
+                    <img src={member.image} alt={`${member.name} profile photo`} className="team-photo" loading="lazy" />
+                    <div className="team-meta">
+                      <h3 className="font-display text-lg sm:text-xl">{member.name}</h3>
+                      <p className="text-muted text-sm">{member.role}</p>
+                      <span className="team-tag">{member.tag}</span>
+                    </div>
+                  </div>
+
+                  <div className="team-card-face team-card-back">
+                    <div className="space-y-2">
+                      <h3 className="font-display text-xl">{member.name}</h3>
+                      <p className="text-soft text-sm leading-6">{member.bio}</p>
+                    </div>
+                    <div className="team-contact-row">
+                      <a
+                        className="team-contact-btn"
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open ${member.name} LinkedIn profile`}
+                      >
+                        <Linkedin size={15} />
+                        LinkedIn
+                      </a>
+                      <a className="team-contact-btn" href={`mailto:${member.email}`} aria-label={`Email ${member.name}`}>
+                        <Mail size={15} />
+                        Email
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </section>
