@@ -152,7 +152,39 @@ const experience = [
     period: "2022 - 2024",
     impact:
       "Built internal platforms that improved engineering productivity and incident response speed.",
+
   },
+];
+
+type CountryOption = {
+  flag: string;
+  code: string;
+  iso: string;
+  name: string;
+  min: number;
+  max: number;
+  hint: string;
+  placeholder: string;
+  regex: RegExp;
+};
+
+const COUNTRIES: CountryOption[] = [
+  { flag: "🇮🇳", code: "+91",  iso: "IN", name: "India",       min: 10, max: 10, hint: "10 digits, starts with 6–9",  placeholder: "98765 43210",   regex: /^[6-9]\d{9}$/ },
+  { flag: "🇺🇸", code: "+1",   iso: "US", name: "USA",         min: 10, max: 10, hint: "10 digits",                   placeholder: "202 555 0101",  regex: /^\d{10}$/ },
+  { flag: "🇬🇧", code: "+44",  iso: "GB", name: "UK",          min: 10, max: 10, hint: "10 digits, starts with 7",    placeholder: "7911 123456",   regex: /^7\d{9}$/ },
+  { flag: "🇦🇺", code: "+61",  iso: "AU", name: "Australia",   min: 9,  max: 9,  hint: "9 digits, starts with 4",     placeholder: "412 345 678",   regex: /^4\d{8}$/ },
+  { flag: "🇨🇦", code: "+1",   iso: "CA", name: "Canada",      min: 10, max: 10, hint: "10 digits",                   placeholder: "613 555 0101",  regex: /^\d{10}$/ },
+  { flag: "🇩🇪", code: "+49",  iso: "DE", name: "Germany",     min: 10, max: 11, hint: "10–11 digits",                placeholder: "1512 3456789",  regex: /^\d{10,11}$/ },
+  { flag: "🇫🇷", code: "+33",  iso: "FR", name: "France",      min: 9,  max: 9,  hint: "9 digits, starts with 6/7",   placeholder: "6 12 34 56 78", regex: /^[67]\d{8}$/ },
+  { flag: "🇸🇬", code: "+65",  iso: "SG", name: "Singapore",   min: 8,  max: 8,  hint: "8 digits, starts with 8/9",   placeholder: "9123 4567",     regex: /^[89]\d{7}$/ },
+  { flag: "🇦🇪", code: "+971", iso: "AE", name: "UAE",         min: 9,  max: 9,  hint: "9 digits, starts with 5",     placeholder: "50 123 4567",   regex: /^5\d{8}$/ },
+  { flag: "🇯🇵", code: "+81",  iso: "JP", name: "Japan",       min: 10, max: 11, hint: "10–11 digits",                placeholder: "90 1234 5678",  regex: /^\d{10,11}$/ },
+  { flag: "🇨🇳", code: "+86",  iso: "CN", name: "China",       min: 11, max: 11, hint: "11 digits, starts with 1",    placeholder: "139 1234 5678", regex: /^1[3-9]\d{9}$/ },
+  { flag: "🇧🇷", code: "+55",  iso: "BR", name: "Brazil",      min: 10, max: 11, hint: "10–11 digits",                placeholder: "11 91234 5678", regex: /^\d{10,11}$/ },
+  { flag: "🇲🇾", code: "+60",  iso: "MY", name: "Malaysia",    min: 9,  max: 10, hint: "9–10 digits, starts with 1",  placeholder: "12 345 6789",   regex: /^1\d{8,9}$/ },
+  { flag: "🇵🇭", code: "+63",  iso: "PH", name: "Philippines", min: 10, max: 10, hint: "10 digits, starts with 9",    placeholder: "917 123 4567",  regex: /^9\d{9}$/ },
+  { flag: "🇿🇦", code: "+27",  iso: "ZA", name: "S. Africa",   min: 9,  max: 9,  hint: "9 digits",                    placeholder: "71 234 5678",   regex: /^\d{9}$/ },
+  { flag: "🇳🇬", code: "+234", iso: "NG", name: "Nigeria",     min: 10, max: 10, hint: "10 digits, starts with 7–9",  placeholder: "803 123 4567",  regex: /^[789]\d{9}$/ },
 ];
 
 const teamMembers = [
@@ -212,6 +244,13 @@ const teamMembers = [
   },
 ];
 
+const TEAM_CLONE = 3;
+const extendedTeamMembers = [
+  ...teamMembers.slice(-TEAM_CLONE),
+  ...teamMembers,
+  ...teamMembers.slice(0, TEAM_CLONE),
+];
+
 type ContactFormData = {
   name: string;
   email: string;
@@ -235,8 +274,12 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
+  const [phoneError, setPhoneError] = useState("");
   const sparkResetTimer = useRef<number | null>(null);
   const teamCarouselRef = useRef<HTMLDivElement | null>(null);
+  const teamExtRef = useRef(TEAM_CLONE);
+  const teamScrollTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -276,86 +319,124 @@ export default function Home() {
 
   useEffect(() => {
     const carousel = teamCarouselRef.current;
-    if (!carousel) {
-      return;
-    }
+    if (!carousel) return;
 
-    const updateActiveIndex = () => {
+    const getStride = () => {
       const firstCard = carousel.querySelector<HTMLElement>(".team-card");
-      if (!firstCard) {
-        return;
-      }
-
+      if (!firstCard) return 0;
       const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
-      const stride = firstCard.offsetWidth + gap;
-      if (stride <= 0) {
-        return;
-      }
-
-      const rawIndex = Math.round(carousel.scrollLeft / stride);
-      const normalizedIndex = Math.max(0, Math.min(teamMembers.length - 1, rawIndex));
-      setActiveTeamIndex(normalizedIndex);
+      return firstCard.offsetWidth + gap;
     };
 
-    updateActiveIndex();
-    carousel.addEventListener("scroll", updateActiveIndex, { passive: true });
-    window.addEventListener("resize", updateActiveIndex);
+    let isTeleporting = false;
+
+    const initRaf = window.requestAnimationFrame(() => {
+      const stride = getStride();
+      if (stride > 0) {
+        isTeleporting = true;
+        carousel.scrollLeft = TEAM_CLONE * stride;
+        teamExtRef.current = TEAM_CLONE;
+        window.setTimeout(() => { isTeleporting = false; }, 80);
+      }
+    });
+
+    const handleScroll = () => {
+      if (isTeleporting) return;
+      if (teamScrollTimerRef.current !== null) window.clearTimeout(teamScrollTimerRef.current);
+      teamScrollTimerRef.current = window.setTimeout(() => {
+        teamScrollTimerRef.current = null;
+        const stride = getStride();
+        if (stride <= 0) return;
+        const extIndex = Math.round(carousel.scrollLeft / stride);
+        const total = teamMembers.length;
+        let targetExt = extIndex;
+        if (extIndex < TEAM_CLONE) {
+          targetExt = extIndex + total;
+        } else if (extIndex >= TEAM_CLONE + total) {
+          targetExt = extIndex - total;
+        }
+        if (targetExt !== extIndex) {
+          isTeleporting = true;
+          carousel.scrollLeft = targetExt * stride;
+          teamExtRef.current = targetExt;
+          window.setTimeout(() => { isTeleporting = false; }, 80);
+        } else {
+          teamExtRef.current = extIndex;
+        }
+        const realIndex = ((targetExt - TEAM_CLONE) % total + total) % total;
+        setActiveTeamIndex(realIndex);
+      }, 120);
+    };
+
+    const handleResize = () => {
+      const stride = getStride();
+      if (stride > 0) {
+        isTeleporting = true;
+        carousel.scrollLeft = teamExtRef.current * stride;
+        window.setTimeout(() => { isTeleporting = false; }, 80);
+      }
+    };
+
+    carousel.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      carousel.removeEventListener("scroll", updateActiveIndex);
-      window.removeEventListener("resize", updateActiveIndex);
+      window.cancelAnimationFrame(initRaf);
+      if (teamScrollTimerRef.current !== null) window.clearTimeout(teamScrollTimerRef.current);
+      carousel.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   const currentTheme = themes[themeIndex];
   const currentStackId = stackViewByTheme[currentTheme.id];
   const currentStackView = stackViews.find((view) => view.id === currentStackId) ?? stackViews[0];
+  const selectedCountry = COUNTRIES.find((country) => country.code === phoneCountryCode) ?? null;
 
   const handleCycleTheme = () => {
     setThemeIndex((prev) => (prev + 1) % themes.length);
   };
 
-  const scrollToTeamIndex = (index: number) => {
+  const scrollToTeamIndex = (realIndex: number) => {
     const carousel = teamCarouselRef.current;
-    if (!carousel) {
-      return;
-    }
-
+    if (!carousel) return;
     const firstCard = carousel.querySelector<HTMLElement>(".team-card");
-    if (!firstCard) {
-      return;
-    }
-
+    if (!firstCard) return;
     const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
     const stride = firstCard.offsetWidth + gap;
-    if (stride <= 0) {
-      return;
-    }
-
-    const clampedIndex = Math.max(0, Math.min(teamMembers.length - 1, index));
-    carousel.scrollTo({
-      left: clampedIndex * stride,
-      behavior: "smooth",
-    });
-    setActiveTeamIndex(clampedIndex);
+    if (stride <= 0) return;
+    const extIndex = TEAM_CLONE + realIndex;
+    carousel.scrollTo({ left: extIndex * stride, behavior: "smooth" });
+    teamExtRef.current = extIndex;
+    setActiveTeamIndex(realIndex);
   };
 
   const handleNextTeam = () => {
-    if (teamMembers.length === 0) {
-      return;
-    }
-
-    const nextIndex = activeTeamIndex >= teamMembers.length - 1 ? 0 : activeTeamIndex + 1;
-    scrollToTeamIndex(nextIndex);
+    const carousel = teamCarouselRef.current;
+    if (!carousel) return;
+    const firstCard = carousel.querySelector<HTMLElement>(".team-card");
+    if (!firstCard) return;
+    const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
+    const stride = firstCard.offsetWidth + gap;
+    if (stride <= 0) return;
+    const nextExt = teamExtRef.current + 1;
+    carousel.scrollTo({ left: nextExt * stride, behavior: "smooth" });
+    teamExtRef.current = nextExt;
+    setActiveTeamIndex(((nextExt - TEAM_CLONE) % teamMembers.length + teamMembers.length) % teamMembers.length);
   };
 
   const handlePrevTeam = () => {
-    if (teamMembers.length === 0) {
-      return;
-    }
-
-    const prevIndex = activeTeamIndex <= 0 ? teamMembers.length - 1 : activeTeamIndex - 1;
-    scrollToTeamIndex(prevIndex);
+    const carousel = teamCarouselRef.current;
+    if (!carousel) return;
+    const firstCard = carousel.querySelector<HTMLElement>(".team-card");
+    if (!firstCard) return;
+    const gap = Number.parseFloat(window.getComputedStyle(carousel).columnGap || "0") || 0;
+    const stride = firstCard.offsetWidth + gap;
+    if (stride <= 0) return;
+    const prevExt = teamExtRef.current - 1;
+    carousel.scrollTo({ left: prevExt * stride, behavior: "smooth" });
+    teamExtRef.current = prevExt;
+    setActiveTeamIndex(((prevExt - TEAM_CLONE) % teamMembers.length + teamMembers.length) % teamMembers.length);
   };
 
   const handleSmoothNav = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
@@ -427,6 +508,41 @@ export default function Home() {
   ) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+  };
+
+  const validatePhone = (digits: string, country: CountryOption | null, code: string) => {
+    if (!digits) return "";
+    if (!/^\+\d{1,3}$/.test(code)) {
+      return "Enter country code like +91 or +1.";
+    }
+    if (!country) {
+      return "Country code not supported yet. Try +91 or +1.";
+    }
+    if (!country.regex.test(digits)) {
+      return `Enter a valid ${country.name} number (${country.hint}).`;
+    }
+    return "";
+  };
+
+  const handleCountryCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const digits = event.target.value.replace(/\D/g, "").slice(0, 3);
+    const nextCode = digits ? `+${digits}` : "+";
+    const matchedCountry = COUNTRIES.find((country) => country.code === nextCode) ?? null;
+    const maxDigits = matchedCountry?.max ?? 15;
+    const normalizedPhone = formData.phone.slice(0, maxDigits);
+
+    setPhoneCountryCode(nextCode);
+    if (normalizedPhone !== formData.phone) {
+      setFormData((prev) => ({ ...prev, phone: normalizedPhone }));
+    }
+    setPhoneError(validatePhone(normalizedPhone, matchedCountry, nextCode));
+  };
+
+  const handlePhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const digits = event.target.value.replace(/\D/g, "").slice(0, selectedCountry?.max ?? 15);
+    setFormData((prev) => ({ ...prev, phone: digits }));
+    setPhoneError(validatePhone(digits, selectedCountry, phoneCountryCode));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -435,11 +551,20 @@ export default function Home() {
     setSubmitStatus("idle");
     setSubmitMessage("");
 
+    const phoneValidationError = validatePhone(formData.phone, selectedCountry, phoneCountryCode);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
+      setSubmitStatus("error");
+      setSubmitMessage("Please enter a valid phone number for the selected country code.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("email", formData.email);
-      payload.append("phone", formData.phone);
+      payload.append("phone", formData.phone ? `${phoneCountryCode} ${formData.phone}` : "");
       payload.append("subject", formData.subject);
       payload.append("message", formData.message);
       payload.append("_subject", `[Portfolio Contact] ${formData.subject}`);
@@ -469,6 +594,7 @@ export default function Home() {
         subject: "",
         message: "",
       });
+      setPhoneError("");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Something went wrong.";
       setSubmitStatus("error");
@@ -832,7 +958,6 @@ export default function Home() {
             <p className="text-muted max-w-3xl text-sm leading-6 sm:text-base">
               Meet the people behind our product delivery. Hover on each profile card to view details and contact options.
             </p>
-            <p className="text-soft text-xs uppercase tracking-[0.12em]">Scroll horizontally to view more profiles</p>
           </div>
 
           <div className="team-controls" aria-label="Team carousel controls">
@@ -860,8 +985,8 @@ export default function Home() {
           </div>
 
           <div ref={teamCarouselRef} className="team-carousel scrollbar-none" aria-label="Team profiles carousel">
-            {teamMembers.map((member) => (
-              <article key={member.email} className="team-card" tabIndex={0}>
+            {extendedTeamMembers.map((member, i) => (
+              <article key={`team-ext-${i}`} className="team-card" tabIndex={0}>
                 <div className="team-card-inner">
                   <div className="team-card-face team-card-front">
                     <img src={member.image} alt={`${member.name} profile photo`} className="team-photo" loading="lazy" />
@@ -950,17 +1075,46 @@ export default function Home() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="text-strong space-y-1.5 text-sm font-semibold">
-                Phone Number
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="input-field"
-                  placeholder="Optional"
-                />
-              </label>
+              <div className="space-y-1.5">
+                <label className="text-strong block text-sm font-semibold" htmlFor="phone-country-code">
+                  Phone Number
+                </label>
+                <div className="phone-field-row">
+                  <input
+                    id="phone-country-code"
+                    type="text"
+                    inputMode="numeric"
+                    value={phoneCountryCode}
+                    onChange={handleCountryCodeChange}
+                    className="input-field phone-code-input"
+                    placeholder="+91"
+                    maxLength={4}
+                    aria-label="Country code"
+                  />
+                  <div className="phone-number-wrap">
+                    <input
+                      id="phone-digits"
+                      type="tel"
+                      inputMode="numeric"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      className="input-field phone-number-input"
+                      placeholder={selectedCountry?.placeholder ?? "91002 37653"}
+                      maxLength={selectedCountry?.max ?? 15}
+                      aria-describedby={phoneError ? "phone-error" : undefined}
+                      autoComplete="tel-national"
+                    />
+                    <span className="phone-flag-indicator" aria-hidden="true">
+                      {selectedCountry?.flag ?? "🌐"}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-dim text-xs">Use country code like +91, +1, +44.</p>
+                {phoneError ? (
+                  <p id="phone-error" role="alert" className="phone-error-msg">{phoneError}</p>
+                ) : null}
+              </div>
               <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Subject *
                 <input
