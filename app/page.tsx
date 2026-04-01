@@ -120,7 +120,7 @@ const featuredProjects = [
     description:
       "An online plant store to browse, buy, and manage plants across curated categories — from bonsai to herbs — with cart and delivery registration.",
     stack: ["Next.js", "Tailwind", "MongoDB"],
-    link: "http://localhost:3000",
+    link: "https://planty-virid.vercel.app/",
     previewBg: "linear-gradient(135deg, #1a3d2b 0%, #2d6a4f 45%, #74c69d 100%)",
     previewLabel: "Bring Nature Home 🌿",
     linkLabel: "Open Site",
