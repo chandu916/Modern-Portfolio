@@ -116,43 +116,108 @@ const logoBurstParticles = [
 
 const featuredProjects = [
   {
-    title: "Realtime Team Board",
+    title: "Planty",
     description:
-      "Collaborative planning board with live cursors, optimistic updates, and keyboard-first workflows.",
-    stack: ["Next.js", "TypeScript", "Supabase", "WebSockets"],
-    link: "#",
+      "An online plant store to browse, buy, and manage plants across curated categories — from bonsai to herbs — with cart and delivery registration.",
+    stack: ["Next.js", "Tailwind", "MongoDB"],
+    link: "http://localhost:3000",
+    previewBg: "linear-gradient(135deg, #1a3d2b 0%, #2d6a4f 45%, #74c69d 100%)",
+    previewLabel: "Bring Nature Home 🌿",
+    linkLabel: "Open Site",
   },
   {
-    title: "AI Interview Coach",
+    title: "Stack Overflow Clone",
     description:
-      "Practice interviews with adaptive question paths, scoring feedback, and structured growth reports.",
-    stack: ["React", "Node.js", "OpenAI", "PostgreSQL"],
-    link: "#",
+      "A full-stack Q&A community platform with question posting, answering, voting, and tagging — modelled after Stack Overflow's core workflows.",
+    stack: ["React.js", "MongoDB", "CSS"],
+    link: "https://stackoverflow-frontend-85zb.onrender.com/",
+    previewBg: "linear-gradient(135deg, #232629 0%, #3d3d3d 50%, #f48024 100%)",
+    previewLabel: "Stack Overflow Clone",
+    linkLabel: "Open Site",
   },
   {
-    title: "Commerce Ops Dashboard",
+    title: "Cyber Ranges on AWS",
     description:
-      "Operations analytics platform for product, inventory, and regional demand monitoring in one view.",
-    stack: ["Next.js", "Tailwind", "Prisma", "Chart.js"],
+      "A controlled, interactive cybersecurity environment on AWS where university students practice detecting and mitigating real-world cyber-attacks using industry-grade tooling.",
+    stack: ["AWS", "Cybersecurity", "Web Interface"],
     link: "#",
+    previewBg: "linear-gradient(135deg, #0a0f1e 0%, #0d2137 50%, #00c2ff 100%)",
+    previewLabel: "Cybersecurity · AWS Range",
+    linkLabel: "Case Study",
+  },
+  {
+    title: "Basic Banking System",
+    description:
+      "Dynamic web banking app with secure login, user profiles showing balance and account info, and peer-to-peer money transfer with a full transaction history.",
+    stack: ["HTML", "CSS", "JavaScript", "Node.js"],
+    link: "https://github.com/chandu916/Banking_system",
+    previewBg: "linear-gradient(135deg, #003366 0%, #0055a5 50%, #4a9ede 100%)",
+    previewLabel: "Banking System",
+    linkLabel: "View on GitHub",
+  },
+  {
+    title: "Network Intrusion Detection",
+    description:
+      "ML-based IDS that uses a Decision Tree classifier to analyse incoming network packets in real time and flag potential attacks across an entire monitored network.",
+    stack: ["Python", "Machine Learning", "Decision Tree"],
+    link: "#",
+    previewBg: "linear-gradient(135deg, #1a0000 0%, #6b0000 50%, #ff4444 100%)",
+    previewLabel: "Intrusion Detection System",
+    linkLabel: "Case Study",
+  },
+  {
+    title: "Crowd-Sourced Question Banks",
+    description:
+      "Web platform where anonymous contributors upload exam questions and institutions generate standardised question papers from the growing crowd-sourced bank.",
+    stack: ["HTML", "CSS", "JavaScript", "Node.js"],
+    link: "#",
+    previewBg: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #e94560 100%)",
+    previewLabel: "Question Bank Platform",
+    linkLabel: "Case Study",
   },
 ];
 
 const experience = [
   {
-    role: "Senior Full-Stack Developer",
-    company: "Your Company",
-    period: "2024 - Present",
+    role: "Quality Engineer",
+    company: "LTIMindtree",
+    companyShort: "LTM",
+    type: "Full-time",
+    period: "Nov 2024 – Present · 1 yr 6 mos",
+    location: "Bengaluru, Karnataka, India · Hybrid",
     impact:
-      "Led architecture modernization, reducing release cycle time from weekly to daily deployments.",
+      "Driving quality assurance and automation across enterprise projects, owning end-to-end test coverage with Playwright and validating cloud data pipelines on AWS Glue.",
+    skills: ["Playwright", "AWS Glue", "Test Automation", "CI/CD", "Agile", "JIRA"],
+    companyBg: "#ffffff",
+    companyColor: "#FF5346",
+    typeBadgeBg: "rgba(255,83,70,0.12)",
+    typeBadgeColor: "#FF5346",
   },
   {
-    role: "Software Engineer",
-    company: "Your Company",
-    period: "2022 - 2024",
+    role: "SDET",
+    company: "LTIMindtree",
+    companyShort: "LTM",
+    type: "Apprenticeship",
+    period: "Aug 2024 – Oct 2024 · 3 mos",
+    location: "Bhubaneswar, Odisha, India · On-site",
     impact:
-      "Built internal platforms that improved engineering productivity and incident response speed.",
-
+      "Completed an intensive SDET apprenticeship focused on Core Java, web development fundamentals, and software testing practices under senior engineering mentorship.",
+    skills: ["Core Java", "Web Development", "Manual Testing", "OOP"],
+    companyBg: "#ffffff",
+    companyColor: "#FF5346",
+    typeBadgeBg: "rgba(255,83,70,0.12)",
+    typeBadgeColor: "#FF5346",
+  },
+  {
+    role: "Full-Stack Web Developer",
+    company: "NullClass",
+    type: "Internship",
+    period: "Jan 2024 – Mar 2024 · 3 mos",
+    location: "Remote",
+    impact:
+      "Built and shipped full-stack features using the MERN stack — from REST APIs to responsive React UIs — contributing to real product deliverables in an agile team environment.",
+    skills: ["MongoDB", "React.js", "Node.js", "Express.js", "REST APIs", "Tailwind", "Git", "JavaScript"],
+    companyBg: "linear-gradient(135deg, #1a0800 0%, #7a2d00 55%, #ff6b35 100%)",
   },
 ];
 
@@ -907,8 +972,18 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="card flex h-full flex-col justify-between gap-5"
+                className="card flex h-full flex-col justify-between gap-5 overflow-hidden"
               >
+                {"previewBg" in project && project.previewBg && (
+                  <div
+                    className="-mx-5 -mt-5 flex items-end px-5 pb-3 pt-10"
+                    style={{ background: project.previewBg }}
+                  >
+                    <span className="text-xs font-semibold tracking-wide" style={{ color: "rgba(255,255,255,0.88)" }}>
+                      {(project as { previewLabel?: string }).previewLabel}
+                    </span>
+                  </div>
+                )}
                 <div className="space-y-4">
                   <h3 className="font-display text-lg sm:text-xl">{project.title}</h3>
                   <p className="text-muted text-sm leading-6">{project.description}</p>
@@ -920,8 +995,13 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-                <a href={project.link} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold">
-                  Case Study
+                <a
+                  href={project.link}
+                  target={("linkLabel" in project && project.linkLabel) ? "_blank" : undefined}
+                  rel={("linkLabel" in project && project.linkLabel) ? "noopener noreferrer" : undefined}
+                  className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
+                >
+                  {("linkLabel" in project && project.linkLabel) ? project.linkLabel : "Case Study"}
                   <ArrowUpRight size={15} />
                 </a>
               </motion.article>
@@ -934,19 +1014,56 @@ export default function Home() {
           <div className="grid gap-4 lg:grid-cols-2">
             {experience.map((item, index) => (
               <motion.article
-                key={item.role}
+                key={item.role + item.period}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="card"
+                className="card overflow-hidden"
               >
+                {"companyBg" in item && item.companyBg && (
+                  <div
+                    className="-mx-5 -mt-5 mb-4 flex items-center justify-between px-5 py-3"
+                    style={{ background: item.companyBg, borderBottom: item.companyBg === "#ffffff" ? "1px solid rgba(0,0,0,0.07)" : undefined }}
+                  >
+                    <span
+                      style={{
+                        color: (item as { companyColor?: string }).companyColor ?? "rgba(255,255,255,0.92)",
+                        fontWeight: 900,
+                        fontSize: "1.05rem",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        fontFamily: "Arial Black, Arial, sans-serif",
+                      }}
+                    >
+                      {(item as { companyShort?: string }).companyShort ?? item.company}
+                    </span>
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                      style={{
+                        background: (item as { typeBadgeBg?: string }).typeBadgeBg ?? "rgba(255,255,255,0.18)",
+                        color: (item as { typeBadgeColor?: string }).typeBadgeColor ?? "rgba(255,255,255,0.88)",
+                      }}
+                    >
+                      {(item as { type?: string }).type}
+                    </span>
+                  </div>
+                )}
                 <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
                   <h3 className="font-display text-lg sm:text-xl">{item.role}</h3>
                   <span className="text-dim text-xs uppercase tracking-[0.12em]">{item.period}</span>
                 </div>
-                <p className="text-strong mb-3 text-sm font-semibold">{item.company}</p>
-                <p className="text-muted text-sm leading-6">{item.impact}</p>
+                {"location" in item && (
+                  <p className="text-dim mb-2 text-xs">{(item as { location?: string }).location}</p>
+                )}
+                <p className="text-muted mb-4 text-sm leading-6">{item.impact}</p>
+                {"skills" in item && Array.isArray((item as { skills?: string[] }).skills) && (
+                  <div className="flex flex-wrap gap-2">
+                    {((item as { skills?: string[] }).skills ?? []).map((skill) => (
+                      <span key={skill} className="chip text-xs">{skill}</span>
+                    ))}
+                  </div>
+                )}
               </motion.article>
             ))}
           </div>
@@ -1040,7 +1157,7 @@ export default function Home() {
               <a className="icon-btn" href="https://github.com/chandu916" target="_blank" rel="noreferrer" aria-label="GitHub">
                 <Github size={18} />
               </a>
-              <a className="icon-btn" href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+              <a className="icon-btn" href="https://www.linkedin.com/in/chandhan-profile/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
                 <Linkedin size={18} />
               </a>
             </div>
