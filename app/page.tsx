@@ -117,36 +117,43 @@ const logoBurstParticles = [
 const featuredProjects = [
   {
     title: "Planty",
+    type: "Live Website",
     description:
       "An online plant store to browse, buy, and manage plants across curated categories — from bonsai to herbs — with cart and delivery registration.",
     stack: ["Next.js", "Tailwind", "MongoDB"],
     link: "https://planty-virid.vercel.app/",
     previewBg: "linear-gradient(135deg, #1a3d2b 0%, #2d6a4f 45%, #74c69d 100%)",
     previewLabel: "Bring Nature Home 🌿",
-    linkLabel: "Open Site",
+    linkLabel: "Visit Website",
+    highlight: "Shopping Experience",
   },
   {
     title: "Stack Overflow Clone",
+    type: "Live Website",
     description:
       "A full-stack Q&A community platform with question posting, answering, voting, and tagging — modelled after Stack Overflow's core workflows.",
     stack: ["React.js", "MongoDB", "CSS"],
     link: "https://stackoverflow-frontend-85zb.onrender.com/",
     previewBg: "linear-gradient(135deg, #232629 0%, #3d3d3d 50%, #f48024 100%)",
     previewLabel: "Stack Overflow Clone",
-    linkLabel: "Open Site",
+    linkLabel: "Visit Website",
+    highlight: "Community Platform",
   },
   {
     title: "Cyber Ranges on AWS",
+    type: "Case Study",
     description:
       "A controlled, interactive cybersecurity environment on AWS where university students practice detecting and mitigating real-world cyber-attacks using industry-grade tooling.",
     stack: ["AWS", "Cybersecurity", "Web Interface"],
-    link: "#",
+    link: "",
     previewBg: "linear-gradient(135deg, #0a0f1e 0%, #0d2137 50%, #00c2ff 100%)",
     previewLabel: "Cybersecurity · AWS Range",
-    linkLabel: "Case Study",
+    linkLabel: "Coming Soon",
+    highlight: "Security Lab",
   },
   {
     title: "Basic Banking System",
+    type: "GitHub Project",
     description:
       "Dynamic web banking app with secure login, user profiles showing balance and account info, and peer-to-peer money transfer with a full transaction history.",
     stack: ["HTML", "CSS", "JavaScript", "Node.js"],
@@ -154,28 +161,44 @@ const featuredProjects = [
     previewBg: "linear-gradient(135deg, #003366 0%, #0055a5 50%, #4a9ede 100%)",
     previewLabel: "Banking System",
     linkLabel: "View on GitHub",
+    highlight: "Fintech Workflow",
   },
   {
     title: "Network Intrusion Detection",
+    type: "Case Study",
     description:
       "ML-based IDS that uses a Decision Tree classifier to analyse incoming network packets in real time and flag potential attacks across an entire monitored network.",
     stack: ["Python", "Machine Learning", "Decision Tree"],
-    link: "#",
+    link: "",
     previewBg: "linear-gradient(135deg, #1a0000 0%, #6b0000 50%, #ff4444 100%)",
     previewLabel: "Intrusion Detection System",
-    linkLabel: "Case Study",
+    linkLabel: "Coming Soon",
+    highlight: "ML Security",
   },
   {
     title: "Crowd-Sourced Question Banks",
+    type: "Case Study",
     description:
       "Web platform where anonymous contributors upload exam questions and institutions generate standardised question papers from the growing crowd-sourced bank.",
     stack: ["HTML", "CSS", "JavaScript", "Node.js"],
-    link: "#",
+    link: "",
     previewBg: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #e94560 100%)",
     previewLabel: "Question Bank Platform",
-    linkLabel: "Case Study",
+    linkLabel: "Coming Soon",
+    highlight: "Education Platform",
   },
 ];
+
+const getProjectUrlLabel = (link: string) => {
+  if (!link) return "coming-soon.local";
+
+  try {
+    const parsed = new URL(link);
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    return link.replace(/^https?:\/\//, "");
+  }
+};
 
 const experience = [
   {
@@ -962,9 +985,16 @@ export default function Home() {
           </motion.aside>
         </section>
 
-        <section id="projects" className="space-y-5 sm:space-y-6">
-          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Projects</h2>
-          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <section id="projects" className="space-y-4 sm:space-y-6">
+          <div className="space-y-2">
+            <p className="text-dim text-xs font-semibold uppercase tracking-[0.18em]">Some Of My Work</p>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Websites & Products</h2>
+            <p className="text-muted max-w-3xl text-[0.92rem] leading-6 sm:text-base">
+              Explore projects the way users experience them: as products you can click, browse, and evaluate in a visual grid.
+            </p>
+          </div>
+
+          <div className="grid gap-3.5 sm:gap-5 md:grid-cols-2 xl:grid-cols-6">
             {featuredProjects.map((project, index) => (
               <motion.article
                 key={project.title}
@@ -972,16 +1002,56 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="card flex h-full flex-col justify-between gap-5 overflow-hidden"
+                className={`card group flex h-full flex-col justify-between gap-5 overflow-hidden transition-transform duration-300 hover:-translate-y-1 ${
+                  index === 0 || index === 1 ? "xl:col-span-3" : "xl:col-span-2"
+                }`}
               >
                 {"previewBg" in project && project.previewBg && (
                   <div
-                    className="-mx-5 -mt-5 flex items-end px-5 pb-3 pt-10"
+                    className="-mx-5 -mt-5 overflow-hidden border-b border-white/20"
                     style={{ background: project.previewBg }}
                   >
-                    <span className="text-xs font-semibold tracking-wide" style={{ color: "rgba(255,255,255,0.88)" }}>
-                      {(project as { previewLabel?: string }).previewLabel}
-                    </span>
+                    <div className="flex items-center gap-2 bg-black/28 px-3 py-2 sm:px-4 sm:py-2.5">
+                      <span className="h-2.5 w-2.5 rounded-full bg-rose-400/95" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-amber-300/95" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/95" />
+                      <div className="ml-2 flex-1 truncate rounded-full border border-white/20 bg-black/20 px-2.5 py-1 text-[10px] font-medium text-white/80 sm:px-3">
+                        {getProjectUrlLabel(project.link)}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 px-3 pb-3 pt-2.5 sm:space-y-3 sm:px-4 sm:pb-4 sm:pt-3">
+                      <div className="rounded-xl border border-white/25 bg-black/20 p-2.5 backdrop-blur-[1px] sm:p-3">
+                        <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90">
+                          <span>{project.type}</span>
+                          <span className="rounded-full border border-white/30 px-2 py-0.5 text-white/85">{project.highlight}</span>
+                        </div>
+
+                        {project.type === "Live Website" && project.link ? (
+                          <div className="overflow-hidden rounded-lg border border-white/25 bg-white">
+                            <iframe
+                              src={project.link}
+                              title={`${project.title} live preview`}
+                              loading="lazy"
+                              className="h-[188px] w-full bg-white sm:h-[235px] lg:h-[260px]"
+                            />
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-xs font-semibold text-white/95">{(project as { previewLabel?: string }).previewLabel}</p>
+                            <div className="mt-3 space-y-2">
+                              <div className="h-2.5 w-11/12 rounded-full bg-white/70" />
+                              <div className="h-2.5 w-8/12 rounded-full bg-white/55" />
+                            </div>
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                              <div className="h-8 rounded-md border border-white/20 bg-white/18" />
+                              <div className="h-8 rounded-md border border-white/20 bg-white/14" />
+                              <div className="h-8 rounded-md border border-white/20 bg-white/12" />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
                 <div className="space-y-4">
@@ -995,15 +1065,21 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
-                <a
-                  href={project.link}
-                  target={("linkLabel" in project && project.linkLabel) ? "_blank" : undefined}
-                  rel={("linkLabel" in project && project.linkLabel) ? "noopener noreferrer" : undefined}
-                  className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
-                >
-                  {("linkLabel" in project && project.linkLabel) ? project.linkLabel : "Case Study"}
-                  <ArrowUpRight size={15} />
-                </a>
+                {project.link ? (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
+                  >
+                    {("linkLabel" in project && project.linkLabel) ? project.linkLabel : "Open"}
+                    <ArrowUpRight size={15} />
+                  </a>
+                ) : (
+                  <span className="text-dim inline-flex min-h-11 items-center gap-2 text-sm font-semibold">
+                    {("linkLabel" in project && project.linkLabel) ? project.linkLabel : "Coming Soon"}
+                  </span>
+                )}
               </motion.article>
             ))}
           </div>
