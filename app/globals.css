@@ -539,16 +539,23 @@ section[id] {
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
-  border-radius: 1.4rem;
+  border-radius: 999px;
   border: 1px solid var(--card-border);
-  background: color-mix(in srgb, var(--card) 86%, transparent);
+  background:
+    linear-gradient(175deg, color-mix(in srgb, white 24%, var(--card) 76%) 0%, color-mix(in srgb, var(--card) 88%, transparent) 44%, color-mix(in srgb, var(--button-fill) 22%, var(--card) 78%) 100%);
   padding: 0.95rem 1.15rem;
   text-align: left;
   width: fit-content;
   max-width: 100%;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  will-change: transform;
   box-shadow:
-    0 12px 28px color-mix(in srgb, var(--background) 74%, black 16%),
-    inset 0 1px 0 color-mix(in srgb, white 18%, transparent);
+    0 16px 32px color-mix(in srgb, var(--background) 72%, black 18%),
+    0 2px 0 color-mix(in srgb, white 24%, transparent) inset,
+    0 -9px 18px color-mix(in srgb, black 14%, transparent) inset,
+    0 0 0 1px color-mix(in srgb, var(--foreground) 8%, transparent) inset;
   transition:
     transform 180ms ease,
     border-color 180ms ease,

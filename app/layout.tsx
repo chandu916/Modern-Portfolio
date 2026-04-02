@@ -69,7 +69,7 @@ const cinzelDecorative = Cinzel_Decorative({
 });
 
 export const metadata: Metadata = {
-  title: "Modern Portfolio",
+  title: "CHANDHAN PORTFOLIO",
   description: "A modern portfolio built with Next.js, TypeScript, and Tailwind CSS.",
 };
 

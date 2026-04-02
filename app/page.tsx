@@ -4,18 +4,13 @@ import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkl
 import { motion } from "framer-motion";
 import { ChangeEvent, FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
-type ThemeId = "studio-dawn" | "midnight-gold" | "deep-ocean" | "charcoal-luxe";
+type ThemeId = "midnight-gold" | "deep-ocean";
 
 const themes: {
   id: ThemeId;
   name: string;
   preview: string;
 }[] = [
-  {
-    id: "studio-dawn",
-    name: "Studio Dawn",
-    preview: "linear-gradient(135deg, #ffd6a5 0%, #9ad6d0 55%, #eef3f7 100%)",
-  },
   {
     id: "midnight-gold",
     name: "Midnight Gold",
@@ -25,11 +20,6 @@ const themes: {
     id: "deep-ocean",
     name: "Deep Ocean Glass",
     preview: "linear-gradient(135deg, #0f172a 0%, #1d4ed8 48%, #60a5fa 100%)",
-  },
-  {
-    id: "charcoal-luxe",
-    name: "Charcoal Minimal Luxe",
-    preview: "linear-gradient(135deg, #111111 0%, #6b6762 52%, #d4cfc7 100%)",
   },
 ];
 
@@ -63,10 +53,8 @@ const stackViews: {
 ];
 
 const stackViewByTheme: Record<ThemeId, StackViewId> = {
-  "studio-dawn": "timeline-evolution",
   "midnight-gold": "radial-radar",
   "deep-ocean": "timeline-evolution",
-  "charcoal-luxe": "solar-system",
 };
 
 const starTrails = [
@@ -482,6 +470,7 @@ export default function Home() {
   const selectedCountry = COUNTRIES.find((country) => country.code === phoneCountryCode) ?? null;
 
   const handleCycleTheme = () => {
+    triggerLogoSpark(50, 50);
     setThemeIndex((prev) => (prev + 1) % themes.length);
   };
 
@@ -815,7 +804,7 @@ export default function Home() {
               </a>
             </div>
             <p className="text-soft text-sm">
-              Click the CHANDU mark to rotate through all four themes, including the current studio theme.
+              Click the CHANDU capsule to switch between both themes.
             </p>
           </motion.div>
 
