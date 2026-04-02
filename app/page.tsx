@@ -1087,59 +1087,73 @@ export default function Home() {
 
         <section id="experience" className="space-y-5 sm:space-y-6">
           <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="experience-timeline">
+            <div className="experience-line" aria-hidden="true" />
             {experience.map((item, index) => (
               <motion.article
                 key={item.role + item.period}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -72 : 72, y: 8 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.35, delay: index * 0.08 }}
-                className="card overflow-hidden"
+                transition={{ duration: 0.45, delay: 0.05 }}
+                className={`experience-row ${index % 2 === 0 ? "is-left" : "is-right"}`}
               >
-                {"companyBg" in item && item.companyBg && (
-                  <div
-                    className="-mx-5 -mt-5 mb-4 flex items-center justify-between px-5 py-3"
-                    style={{ background: item.companyBg, borderBottom: item.companyBg === "#ffffff" ? "1px solid rgba(0,0,0,0.07)" : undefined }}
-                  >
-                    <span
-                      style={{
-                        color: (item as { companyColor?: string }).companyColor ?? "rgba(255,255,255,0.92)",
-                        fontWeight: 900,
-                        fontSize: "1.05rem",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        fontFamily: "Arial Black, Arial, sans-serif",
-                      }}
-                    >
-                      {(item as { companyShort?: string }).companyShort ?? item.company}
-                    </span>
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
-                      style={{
-                        background: (item as { typeBadgeBg?: string }).typeBadgeBg ?? "rgba(255,255,255,0.18)",
-                        color: (item as { typeBadgeColor?: string }).typeBadgeColor ?? "rgba(255,255,255,0.88)",
-                      }}
-                    >
-                      {(item as { type?: string }).type}
-                    </span>
+                <div className="experience-col">
+                  <div className="card experience-card overflow-hidden">
+                    {"companyBg" in item && item.companyBg && (
+                      <div
+                        className="-mx-5 -mt-5 mb-4 flex items-center justify-between px-5 py-3"
+                        style={{ background: item.companyBg, borderBottom: item.companyBg === "#ffffff" ? "1px solid rgba(0,0,0,0.07)" : undefined }}
+                      >
+                        <span
+                          style={{
+                            color: (item as { companyColor?: string }).companyColor ?? "rgba(255,255,255,0.92)",
+                            fontWeight: 900,
+                            fontSize: "1.05rem",
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            fontFamily: "Arial Black, Arial, sans-serif",
+                          }}
+                        >
+                          {(item as { companyShort?: string }).companyShort ?? item.company}
+                        </span>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                          style={{
+                            background: (item as { typeBadgeBg?: string }).typeBadgeBg ?? "rgba(255,255,255,0.18)",
+                            color: (item as { typeBadgeColor?: string }).typeBadgeColor ?? "rgba(255,255,255,0.88)",
+                          }}
+                        >
+                          {(item as { type?: string }).type}
+                        </span>
+                      </div>
+                    )}
+                    <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
+                      <h3 className="font-display text-lg sm:text-xl">{item.role}</h3>
+                      <span className="text-dim text-xs uppercase tracking-[0.12em]">{item.period}</span>
+                    </div>
+                    <p className="text-muted mb-1 text-sm font-semibold">{item.company}</p>
+                    {"location" in item && (
+                      <p className="text-dim mb-2 text-xs">{(item as { location?: string }).location}</p>
+                    )}
+                    <p className="text-muted mb-4 text-sm leading-6">{item.impact}</p>
+                    {"skills" in item && Array.isArray((item as { skills?: string[] }).skills) && (
+                      <div className="flex flex-wrap gap-2">
+                        {((item as { skills?: string[] }).skills ?? []).map((skill) => (
+                          <span key={skill} className="chip text-xs">{skill}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
-                  <h3 className="font-display text-lg sm:text-xl">{item.role}</h3>
-                  <span className="text-dim text-xs uppercase tracking-[0.12em]">{item.period}</span>
                 </div>
-                {"location" in item && (
-                  <p className="text-dim mb-2 text-xs">{(item as { location?: string }).location}</p>
-                )}
-                <p className="text-muted mb-4 text-sm leading-6">{item.impact}</p>
-                {"skills" in item && Array.isArray((item as { skills?: string[] }).skills) && (
-                  <div className="flex flex-wrap gap-2">
-                    {((item as { skills?: string[] }).skills ?? []).map((skill) => (
-                      <span key={skill} className="chip text-xs">{skill}</span>
-                    ))}
-                  </div>
-                )}
+
+                <div className="experience-marker" aria-hidden="true">
+                  <span>{(item as { companyShort?: string }).companyShort ?? item.company.slice(0, 3).toUpperCase()}</span>
+                </div>
+
+                <div className="experience-col experience-date-col">
+                  <p className="text-dim text-xs uppercase tracking-[0.12em]">{item.period}</p>
+                </div>
               </motion.article>
             ))}
           </div>

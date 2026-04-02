@@ -980,6 +980,92 @@ section[id] {
   transition: transform 180ms ease, background-color 180ms ease;
 }
 
+.experience-timeline {
+  --experience-marker-size: 3.2rem;
+  position: relative;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.experience-line {
+  position: absolute;
+  left: 50%;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--button-fill) 20%, transparent), color-mix(in srgb, var(--button-fill) 78%, transparent), color-mix(in srgb, var(--button-fill) 20%, transparent));
+}
+
+.experience-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--experience-marker-size) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.9rem;
+}
+
+.experience-col {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.experience-row > .experience-col:first-child,
+.experience-marker,
+.experience-date-col {
+  grid-row: 1;
+}
+
+.experience-card {
+  width: 100%;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--background) 65%, black 14%);
+}
+
+.experience-row.is-left .experience-col:first-child {
+  grid-column: 1;
+}
+
+.experience-row.is-left .experience-date-col {
+  grid-column: 3;
+  justify-self: start;
+}
+
+.experience-row.is-right .experience-col:first-child {
+  grid-column: 3;
+}
+
+.experience-row.is-right .experience-date-col {
+  grid-column: 1;
+  justify-self: end;
+}
+
+.experience-date-col {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+}
+
+.experience-marker {
+  grid-column: 2;
+  align-self: center;
+  width: var(--experience-marker-size);
+  height: var(--experience-marker-size);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--card) 78%, var(--button-fill) 22%);
+  color: var(--strong);
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--background) 72%, black 18%);
+}
+
 .team-contact-btn:hover {
   transform: translateY(-1px);
   background: var(--secondary-hover);
@@ -1657,6 +1743,34 @@ section[id] {
 }
 
 @media (max-width: 767px) {
+  .experience-timeline {
+    --experience-marker-size: 2.45rem;
+  }
+
+  .experience-line {
+    left: calc(var(--experience-marker-size) / 2);
+    transform: none;
+  }
+
+  .experience-row {
+    grid-template-columns: var(--experience-marker-size) minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .experience-row.is-left .experience-col:first-child,
+  .experience-row.is-right .experience-col:first-child {
+    grid-column: 2;
+  }
+
+  .experience-date-col {
+    display: none;
+  }
+
+  .experience-marker {
+    grid-column: 1;
+    font-size: 0.58rem;
+  }
+
   .team-controls {
     display: none;
   }
