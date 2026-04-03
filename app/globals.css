@@ -923,8 +923,7 @@ section[id] {
 }
 
 .team-card-front {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  position: relative;
 }
 
 .team-photo {
@@ -933,13 +932,60 @@ section[id] {
   min-height: 0;
   object-fit: cover;
   object-position: center;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 0;
 }
 
 .team-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: grid;
   gap: 0.38rem;
-  padding: 0.95rem 1rem 1.1rem;
+  padding: 1rem 1rem 1.05rem;
+  background: linear-gradient(180deg, rgba(8, 10, 16, 0.12) 0%, rgba(8, 10, 16, 0.84) 30%, rgba(8, 10, 16, 0.94) 100%);
+  backdrop-filter: blur(6px);
+}
+
+.team-name {
+  --team-name-start: #ffd166;
+  --team-name-mid: #ff7b7b;
+  --team-name-end: #ff4d6d;
+  font-family: var(--font-cinzel-decorative), serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.08;
+  text-rendering: optimizeLegibility;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.72rem 0.34rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background:
+    radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--team-name-start) 72%, white 28%) 0 4%, transparent 5%),
+    radial-gradient(circle at 72% 42%, color-mix(in srgb, var(--team-name-mid) 68%, white 32%) 0 3.5%, transparent 4.5%),
+    radial-gradient(circle at 48% 78%, color-mix(in srgb, var(--team-name-end) 70%, white 30%) 0 3%, transparent 4%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(244, 244, 246, 0.84));
+  color: #050505;
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke: 0.35px #000000;
+  text-shadow:
+    0 0 10px color-mix(in srgb, var(--team-name-start) 20%, transparent),
+    0 0 14px color-mix(in srgb, var(--team-name-end) 16%, transparent);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.team-meta .text-muted {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.team-meta .team-tag {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .team-tag {

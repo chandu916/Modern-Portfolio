@@ -265,58 +265,64 @@ const COUNTRIES: CountryOption[] = [
 
 const teamMembers = [
   {
-    name: "Aarav Sharma",
-    role: "Product Engineer",
+    name: "Chandhan M",
+    role: "Frontend Engineer",
     tag: "Frontend Systems",
     image: "https://i.pravatar.cc/640?img=12",
-    bio: "Builds polished, accessible UI systems and keeps product quality high from concept to release.",
-    linkedin: "https://linkedin.com/in/aarav-sharma",
-    email: "aarav@yourcompany.com",
+    bio: "Architects scalable frontend systems and builds polished, accessible interfaces with a strong focus on usability.",
+    linkedin: "https://linkedin.com/in/chandhan-m",
+    email: "chandhan@yourcompany.com",
+    namePalette: ["#ffd166", "#ff7b7b", "#ff4d6d"],
   },
   {
-    name: "Meera Nair",
+    name: "Vishnu Y",
     role: "Full-Stack Developer",
-    tag: "API + Integrations",
+    tag: "API Integrations",
     image: "https://i.pravatar.cc/640?img=45",
-    bio: "Owns backend services, integrations, and reliability patterns for high-traffic user workflows.",
-    linkedin: "https://linkedin.com/in/meera-nair",
-    email: "meera@yourcompany.com",
+    bio: "Delivers full-stack features with reliable backend services and smooth API integrations across product workflows.",
+    linkedin: "https://linkedin.com/in/vishnu-y",
+    email: "vishnu@yourcompany.com",
+    namePalette: ["#7dd3fc", "#60a5fa", "#c084fc"],
   },
   {
-    name: "Rahul Verma",
-    role: "Cloud Engineer",
-    tag: "Azure + DevOps",
+    name: "Vivek M",
+    role: "Full-Stack Developer",
+    tag: "System Performance",
     image: "https://i.pravatar.cc/640?img=16",
-    bio: "Designs scalable cloud infrastructure, observability, and deployment pipelines for fast delivery.",
-    linkedin: "https://linkedin.com/in/rahul-verma",
-    email: "rahul@yourcompany.com",
+    bio: "Focuses on performant full-stack systems, optimizing architecture, responsiveness, and production reliability.",
+    linkedin: "https://linkedin.com/in/vivek-m",
+    email: "vivek@yourcompany.com",
+    namePalette: ["#86efac", "#facc15", "#fb7185"],
   },
   {
-    name: "Isha Kapoor",
-    role: "UX Engineer",
-    tag: "Interaction Design",
-    image: "https://i.pravatar.cc/640?img=32",
-    bio: "Transforms user research into clear interfaces, micro-interactions, and friction-free journeys.",
-    linkedin: "https://linkedin.com/in/isha-kapoor",
-    email: "isha@yourcompany.com",
-  },
-  {
-    name: "Karan Patel",
+    name: "Sai M",
     role: "Data Engineer",
-    tag: "Analytics Platform",
-    image: "https://i.pravatar.cc/640?img=53",
-    bio: "Creates event pipelines and data models that power decision-making, reporting, and product insights.",
-    linkedin: "https://linkedin.com/in/karan-patel",
-    email: "karan@yourcompany.com",
+    tag: "Data Engineering",
+    image: "https://i.pravatar.cc/640?img=32",
+    bio: "Builds robust data pipelines and structures that support analytics, reporting, and decision-ready information.",
+    linkedin: "https://linkedin.com/in/sai-m",
+    email: "sai@yourcompany.com",
+    namePalette: ["#f9a8d4", "#f472b6", "#c084fc"],
   },
   {
-    name: "Nisha Reddy",
-    role: "AI Engineer",
-    tag: "LLM Experiences",
+    name: "Abhishek M",
+    role: "Cyber Security Engineer",
+    tag: "Cybersecurity",
+    image: "https://i.pravatar.cc/640?img=53",
+    bio: "Strengthens application security through threat analysis, secure engineering practices, and vulnerability awareness.",
+    linkedin: "https://linkedin.com/in/abhishek-m",
+    email: "abhishek@yourcompany.com",
+    namePalette: ["#fde68a", "#f97316", "#ef4444"],
+  },
+  {
+    name: "Shalini",
+    role: "Quality Engineer",
+    tag: "Quality Assurance",
     image: "https://i.pravatar.cc/640?img=25",
-    bio: "Builds AI-assisted experiences with careful prompt design, evaluation loops, and safe rollout plans.",
-    linkedin: "https://linkedin.com/in/nisha-reddy",
-    email: "nisha@yourcompany.com",
+    bio: "Ensures product quality with disciplined testing, validation strategies, and an eye for release confidence.",
+    linkedin: "https://linkedin.com/in/shalini",
+    email: "shalini@yourcompany.com",
+    namePalette: ["#a5f3fc", "#22d3ee", "#f0abfc"],
   },
 ];
 
@@ -1187,7 +1193,16 @@ export default function Home() {
                   <div className="team-card-face team-card-front">
                     <img src={member.image} alt={`${member.name} profile photo`} className="team-photo" loading="lazy" />
                     <div className="team-meta">
-                      <h3 className="font-display text-lg sm:text-xl">{member.name}</h3>
+                      <h3
+                        className="team-name text-lg sm:text-xl"
+                        style={{
+                          "--team-name-start": member.namePalette[0],
+                          "--team-name-mid": member.namePalette[1],
+                          "--team-name-end": member.namePalette[2],
+                        } as React.CSSProperties}
+                      >
+                        {member.name}
+                      </h3>
                       <p className="text-muted text-sm">{member.role}</p>
                       <span className="team-tag">{member.tag}</span>
                     </div>
@@ -1195,7 +1210,16 @@ export default function Home() {
 
                   <div className="team-card-face team-card-back">
                     <div className="space-y-2">
-                      <h3 className="font-display text-xl">{member.name}</h3>
+                      <h3
+                        className="team-name text-xl"
+                        style={{
+                          "--team-name-start": member.namePalette[0],
+                          "--team-name-mid": member.namePalette[1],
+                          "--team-name-end": member.namePalette[2],
+                        } as React.CSSProperties}
+                      >
+                        {member.name}
+                      </h3>
                       <p className="text-soft text-sm leading-6">{member.bio}</p>
                     </div>
                     <div className="team-contact-row">
