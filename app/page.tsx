@@ -2,60 +2,8 @@
 
 import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { ChangeEvent, FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
-
-type ThemeId = "midnight-gold" | "deep-ocean";
-
-const themes: {
-  id: ThemeId;
-  name: string;
-  preview: string;
-}[] = [
-  {
-    id: "midnight-gold",
-    name: "Midnight Gold",
-    preview: "linear-gradient(135deg, #0b0b0f 0%, #8b6f2e 45%, #e0b95b 100%)",
-  },
-  {
-    id: "deep-ocean",
-    name: "Deep Ocean Glass",
-    preview: "linear-gradient(135deg, #0f172a 0%, #1d4ed8 48%, #60a5fa 100%)",
-  },
-];
-
-const THEME_STORAGE_KEY = "modern-portfolio-theme";
-
-type StackViewId =
-  | "solar-system"
-  | "timeline-evolution"
-  | "radial-radar";
-
-const stackViews: {
-  id: StackViewId;
-  name: string;
-  note: string;
-}[] = [
-  {
-    id: "solar-system",
-    name: "Solar System 2.5D",
-    note: "Categories as planets and tools as orbiting moons",
-  },
-  {
-    id: "timeline-evolution",
-    name: "Timeline Evolution",
-    note: "Foundation to scale to AI/cloud stack growth",
-  },
-  {
-    id: "radial-radar",
-    name: "Radial Skill Radar",
-    note: "Current versus target capabilities by domain",
-  },
-];
-
-const stackViewByTheme: Record<ThemeId, StackViewId> = {
-  "midnight-gold": "radial-radar",
-  "deep-ocean": "timeline-evolution",
-};
+import Image from "next/image";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 
 const starTrails = [
   { left: "8%", top: "12%", delay: "0s", duration: "5.5s" },
@@ -80,26 +28,10 @@ const starTrails = [
   { left: "78%", top: "64%", delay: "2.4s", duration: "6.4s" },
 ];
 
-const timelineStages = [
-  { title: "Foundation", items: ["HTML/CSS", "JavaScript", "React"] },
-  { title: "Scale", items: ["Next.js", "TypeScript", "Node.js"] },
-  { title: "AI + Cloud", items: ["Azure", "OpenAI", "Data Ops"] },
-];
-
-const logoBurstParticles = [
-  { angle: -78, delay: "0ms", length: "3.4rem" },
-  { angle: -44, delay: "30ms", length: "3.9rem" },
-  { angle: -12, delay: "60ms", length: "3.25rem" },
-  { angle: 18, delay: "20ms", length: "3.8rem" },
-  { angle: 46, delay: "70ms", length: "4rem" },
-  { angle: 78, delay: "40ms", length: "3.45rem" },
-  { angle: 122, delay: "55ms", length: "3.7rem" },
-  { angle: 154, delay: "10ms", length: "3.15rem" },
-  { angle: 196, delay: "85ms", length: "3.85rem" },
-  { angle: 232, delay: "35ms", length: "3.4rem" },
-  { angle: 268, delay: "65ms", length: "3.05rem" },
-  { angle: 308, delay: "25ms", length: "3.75rem" },
-];
+const stackShowcase = {
+  name: "Radial Skill Radar",
+  note: "Current strengths across product engineering, API systems, cloud delivery, and AI-ready workflows.",
+};
 
 
 const featuredProjects = [
@@ -342,10 +274,8 @@ type ContactFormData = {
 };
 
 export default function Home() {
-  const [themeIndex, setThemeIndex] = useState(0);
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
   const [activeTeamIndex, setActiveTeamIndex] = useState(0);
-  const [logoSpark, setLogoSpark] = useState({ x: 50, y: 50, active: false, burstKey: 0 });
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -358,18 +288,9 @@ export default function Home() {
   const [submitMessage, setSubmitMessage] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
   const [phoneError, setPhoneError] = useState("");
-  const sparkResetTimer = useRef<number | null>(null);
   const teamCarouselRef = useRef<HTMLDivElement | null>(null);
   const teamExtRef = useRef(TEAM_CLONE);
   const teamScrollTimerRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (sparkResetTimer.current !== null) {
-        window.clearTimeout(sparkResetTimer.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -383,21 +304,6 @@ export default function Home() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  useEffect(() => {
-    const storedThemeId = window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeId | null;
-    const storedIndex = themes.findIndex((theme) => theme.id === storedThemeId);
-
-    if (storedIndex >= 0) {
-      setThemeIndex(storedIndex);
-    }
-  }, []);
-
-  useEffect(() => {
-    const activeTheme = themes[themeIndex];
-    document.documentElement.dataset.theme = activeTheme.id;
-    window.localStorage.setItem(THEME_STORAGE_KEY, activeTheme.id);
-  }, [themeIndex]);
 
   useEffect(() => {
     const carousel = teamCarouselRef.current;
@@ -470,15 +376,7 @@ export default function Home() {
     };
   }, []);
 
-  const currentTheme = themes[themeIndex];
-  const currentStackId = stackViewByTheme[currentTheme.id];
-  const currentStackView = stackViews.find((view) => view.id === currentStackId) ?? stackViews[0];
   const selectedCountry = COUNTRIES.find((country) => country.code === phoneCountryCode) ?? null;
-
-  const handleCycleTheme = () => {
-    triggerLogoSpark(50, 50);
-    setThemeIndex((prev) => (prev + 1) % themes.length);
-  };
 
   const scrollToTeamIndex = (realIndex: number) => {
     const carousel = teamCarouselRef.current;
@@ -536,54 +434,6 @@ export default function Home() {
     });
 
     window.history.replaceState(null, "", `#${targetId}`);
-  };
-
-  const getSparkPosition = (event: PointerEvent<HTMLButtonElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-    return {
-      x: Math.max(0, Math.min(100, x)),
-      y: Math.max(0, Math.min(100, y)),
-    };
-  };
-
-  const triggerLogoSpark = (x: number, y: number) => {
-    if (sparkResetTimer.current !== null) {
-      window.clearTimeout(sparkResetTimer.current);
-    }
-
-    setLogoSpark({
-      x,
-      y,
-      active: true,
-      burstKey: Date.now(),
-    });
-
-    sparkResetTimer.current = window.setTimeout(() => {
-      setLogoSpark((current) => ({ ...current, active: false }));
-      sparkResetTimer.current = null;
-    }, 520);
-  };
-
-  const updateLogoSpark = (event: PointerEvent<HTMLButtonElement>) => {
-    const { x, y } = getSparkPosition(event);
-    setLogoSpark((current) => ({ ...current, x, y }));
-  };
-
-  const burstLogoSpark = (event: PointerEvent<HTMLButtonElement>) => {
-    const { x, y } = getSparkPosition(event);
-    triggerLogoSpark(x, y);
-  };
-
-  const resetLogoSpark = () => {
-    if (sparkResetTimer.current !== null) {
-      window.clearTimeout(sparkResetTimer.current);
-      sparkResetTimer.current = null;
-    }
-
-    setLogoSpark((current) => ({ ...current, active: false }));
   };
 
   const handleInputChange = (
@@ -688,78 +538,33 @@ export default function Home() {
   };
 
   return (
-    <div className={`theme-shell relative isolate min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10 ${currentTheme.id === "midnight-gold" ? "is-gold-galaxy" : ""}`}>
+    <div className="theme-shell is-gold-galaxy relative isolate min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
       <div className="theme-backdrop pointer-events-none absolute inset-0 z-0" />
-      {currentTheme.id === "midnight-gold" ? (
-        <>
-          <div className="gold-galaxy-nebula pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
-          <div className="theme-stars pointer-events-none absolute inset-0 z-20" aria-hidden="true">
-            {starTrails.map((star, index) => (
-              <span
-                key={`star-${index}`}
-                className="theme-star"
-                style={{
-                  "--star-left": star.left,
-                  "--star-top": star.top,
-                  "--star-delay": star.delay,
-                  "--star-duration": star.duration,
-                } as React.CSSProperties}
-              />
-            ))}
-          </div>
-        </>
-      ) : null}
+      <>
+        <div className="gold-galaxy-nebula pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
+        <div className="theme-stars pointer-events-none absolute inset-0 z-20" aria-hidden="true">
+          {starTrails.map((star, index) => (
+            <span
+              key={`star-${index}`}
+              className="theme-star"
+              style={{
+                "--star-left": star.left,
+                "--star-top": star.top,
+                "--star-delay": star.delay,
+                "--star-duration": star.duration,
+              } as React.CSSProperties}
+            />
+          ))}
+        </div>
+      </>
 
       <header className={`site-header ${isHeaderScrolled ? "is-scrolled" : ""}`}>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <button
-            type="button"
-            onClick={handleCycleTheme}
-            className="logo-toggle"
-            aria-label={`Switch theme. Current theme is ${currentTheme.name}`}
-            onPointerEnter={burstLogoSpark}
-            onPointerMove={updateLogoSpark}
-            onPointerDown={burstLogoSpark}
-            onPointerLeave={resetLogoSpark}
-            onBlur={resetLogoSpark}
-            onFocus={() => triggerLogoSpark(50, 50)}
-            style={{
-              "--spark-x": `${logoSpark.x}%`,
-              "--spark-y": `${logoSpark.y}%`,
-              "--spark-alpha": logoSpark.active ? "1" : "0",
-            } as React.CSSProperties}
-            data-active={logoSpark.active ? "true" : "false"}
-          >
+          <div className="site-logo" aria-label="CHANDU brand mark" role="img">
             <span className="logo-aura" aria-hidden="true" />
-            {logoSpark.active ? (
-              <span className="logo-spark-cluster" aria-hidden="true">
-                <span key={`core-${logoSpark.burstKey}`} className="logo-spark-core" />
-                {logoBurstParticles.map((particle, index) => (
-                  <span
-                    key={`${logoSpark.burstKey}-${index}`}
-                    className="logo-spark-burst"
-                    style={{
-                      "--burst-angle": `${particle.angle}deg`,
-                      "--burst-delay": particle.delay,
-                      "--burst-length": particle.length,
-                    } as React.CSSProperties}
-                  />
-                ))}
-              </span>
-            ) : null}
             <span className="logo-wordmark" data-text="CHANDU">CHANDU</span>
-            <span className="theme-preview" aria-label={`Theme ${themeIndex + 1} of ${themes.length}: ${currentTheme.name}`}>
-              {themes.map((theme, index) => (
-                <span
-                  key={theme.id}
-                  className={`theme-swatch ${index === themeIndex ? "is-active" : ""}`}
-                  style={{ background: theme.preview }}
-                  title={theme.name}
-                />
-              ))}
-            </span>
-          </button>
+          </div>
 
           <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
           <a className="nav-link" href="#projects" onClick={(event) => handleSmoothNav(event, "projects")}>
@@ -792,7 +597,6 @@ export default function Home() {
                 <Sparkles size={14} />
                 Open For Opportunities
               </p>
-              <p className="theme-pill">Theme {themeIndex + 1} of {themes.length}</p>
             </div>
             <h1 className="max-w-3xl text-balance font-display text-4xl leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
               I build polished digital products that ship fast and feel premium.
@@ -809,9 +613,6 @@ export default function Home() {
                 Let&apos;s Talk
               </a>
             </div>
-            <p className="text-soft text-sm">
-              Click the CHANDU capsule to switch between both themes.
-            </p>
           </motion.div>
 
           <motion.aside
@@ -823,70 +624,13 @@ export default function Home() {
             <div className="stack-lab-head">
               <div>
                 <p className="text-dim text-xs uppercase tracking-[0.16em]">Stack Lab</p>
-                <h3 className="font-display text-xl sm:text-2xl">{currentStackView.name}</h3>
-                <p className="text-soft mt-1 text-sm">{currentStackView.note}</p>
+                <h3 className="font-display text-xl sm:text-2xl">{stackShowcase.name}</h3>
+                <p className="text-soft mt-1 text-sm">{stackShowcase.note}</p>
               </div>
             </div>
 
-            <div className={`stack-scene model-${currentStackView.id}`}>
-
-              {currentStackView.id === "solar-system" ? (
-                <div className="solar-shell">
-                  <div className="solar-orbit orbit-a" />
-                  <div className="solar-orbit orbit-b" />
-                  <motion.div className="solar-core" animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3.2, repeat: Infinity }}>
-                    Platform
-                  </motion.div>
-                  {[
-                    { label: "Frontend", left: "28%", top: "28%", moon: "Next" },
-                    { label: "Backend", left: "70%", top: "32%", moon: "Node" },
-                    { label: "Data", left: "34%", top: "70%", moon: "SQL" },
-                    { label: "Cloud", left: "74%", top: "68%", moon: "Azure" },
-                  ].map((planet, index) => (
-                    <motion.button
-                      key={planet.label}
-                      type="button"
-                      className="solar-planet"
-                      style={{ left: planet.left, top: planet.top }}
-                      whileHover={{ scale: 1.08 }}
-                      animate={{ y: [0, index % 2 === 0 ? -4 : 4, 0] }}
-                      transition={{ duration: 2.8 + index * 0.3, repeat: Infinity }}
-                    >
-                      {planet.label}
-                      <span className="solar-moon">{planet.moon}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              ) : null}
-
-              {currentStackView.id === "timeline-evolution" ? (
-                <div className="timeline-shell">
-                  <div className="timeline-rail" />
-                  <div className="timeline-grid">
-                    {timelineStages.map((stage, index) => (
-                      <motion.div
-                        key={stage.title}
-                        className="timeline-stage"
-                        whileHover={{ y: -6 }}
-                        animate={{ y: [0, -2, 0] }}
-                        transition={{ duration: 2.8 + index * 0.3, repeat: Infinity }}
-                      >
-                        <p className="timeline-title">{stage.title}</p>
-                        <div className="timeline-items">
-                          {stage.items.map((item) => (
-                            <span key={item} className="timeline-chip">
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {currentStackView.id === "radial-radar" ? (
-                <div className="radar-shell">
+            <div className="stack-scene model-radial-radar">
+              <div className="radar-shell">
                   <svg className="radar-svg" viewBox="0 0 260 220" preserveAspectRatio="none" aria-hidden="true">
                     <polygon points="130,26 212,70 212,150 130,194 48,150 48,70" className="radar-grid" />
                     <polygon points="130,52 188,82 188,138 130,170 72,138 72,82" className="radar-grid" />
@@ -970,8 +714,6 @@ export default function Home() {
                     <span>AI</span>
                   </div>
                 </div>
-              ) : null}
-
             </div>
 
             <div className="section-divider pt-5">
@@ -1191,7 +933,13 @@ export default function Home() {
               <article key={`team-ext-${i}`} className="team-card" tabIndex={0}>
                 <div className="team-card-inner">
                   <div className="team-card-face team-card-front">
-                    <img src={member.image} alt={`${member.name} profile photo`} className="team-photo" loading="lazy" />
+                    <Image
+                      src={member.image}
+                      alt={`${member.name} profile photo`}
+                      className="team-photo"
+                      width={640}
+                      height={720}
+                    />
                     <div className="team-meta">
                       <h3
                         className="team-name text-lg sm:text-xl"

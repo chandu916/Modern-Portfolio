@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  Audiowide,
   Cinzel_Decorative,
   DM_Sans,
   Fraunces,
@@ -68,6 +69,12 @@ const cinzelDecorative = Cinzel_Decorative({
   weight: ["700"],
 });
 
+const audiowide = Audiowide({
+  variable: "--font-audiowide",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 export const metadata: Metadata = {
   title: "CHANDHAN PORTFOLIO",
   description: "A modern portfolio built with Next.js, TypeScript, and Tailwind CSS.",
@@ -81,7 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${inter.variable} ${outfit.variable} ${poppins.variable} ${spaceGrotesk.variable} ${playfairDisplay.variable} ${fraunces.variable} ${sora.variable} ${dmSans.variable} ${cinzelDecorative.variable} antialiased`}
+        className={`${manrope.variable} ${inter.variable} ${outfit.variable} ${poppins.variable} ${spaceGrotesk.variable} ${playfairDisplay.variable} ${fraunces.variable} ${sora.variable} ${dmSans.variable} ${cinzelDecorative.variable} ${audiowide.variable} antialiased`}
       >
         {children}
       </body>
