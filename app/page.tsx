@@ -195,12 +195,27 @@ const COUNTRIES: CountryOption[] = [
   { flag: "🇳🇬", code: "+234", iso: "NG", name: "Nigeria",     min: 10, max: 10, hint: "10 digits, starts with 7–9",  placeholder: "803 123 4567",  regex: /^[789]\d{9}$/ },
 ];
 
-const teamMembers = [
+type TeamMember = {
+  name: string;
+  role: string;
+  tag: string;
+  image: string;
+  imagePosition?: string;
+  mobileImagePosition?: string;
+  bio: string;
+  linkedin: string;
+  email: string;
+  namePalette: [string, string, string];
+};
+
+const teamMembers: TeamMember[] = [
   {
     name: "Chandhan M",
     role: "Frontend Engineer",
     tag: "Frontend Systems",
-    image: "https://i.pravatar.cc/640?img=12",
+    image: "/team/chandhan-m.jpg",
+    imagePosition: "center 16%",
+    mobileImagePosition: "center 18%",
     bio: "Architects scalable frontend systems and builds polished, accessible interfaces with a strong focus on usability.",
     linkedin: "https://linkedin.com/in/chandhan-m",
     email: "chandhan@yourcompany.com",
@@ -210,7 +225,9 @@ const teamMembers = [
     name: "Vishnu Y",
     role: "Full-Stack Developer",
     tag: "API Integrations",
-    image: "https://i.pravatar.cc/640?img=45",
+    image: "/team/vishnu-y.png",
+    imagePosition: "50% 12%",
+    mobileImagePosition: "50% 14%",
     bio: "Delivers full-stack features with reliable backend services and smooth API integrations across product workflows.",
     linkedin: "https://linkedin.com/in/vishnu-y",
     email: "vishnu@yourcompany.com",
@@ -220,7 +237,9 @@ const teamMembers = [
     name: "Vivek M",
     role: "Full-Stack Developer",
     tag: "System Performance",
-    image: "https://i.pravatar.cc/640?img=16",
+    image: "/team/vivek-m.png",
+    imagePosition: "46% 14%",
+    mobileImagePosition: "44% 16%",
     bio: "Focuses on performant full-stack systems, optimizing architecture, responsiveness, and production reliability.",
     linkedin: "https://linkedin.com/in/vivek-m",
     email: "vivek@yourcompany.com",
@@ -240,7 +259,9 @@ const teamMembers = [
     name: "Abhishek M",
     role: "Cyber Security Engineer",
     tag: "Cybersecurity",
-    image: "https://i.pravatar.cc/640?img=53",
+    image: "/team/abhishek-m.png",
+    imagePosition: "32% 14%",
+    mobileImagePosition: "30% 16%",
     bio: "Strengthens application security through threat analysis, secure engineering practices, and vulnerability awareness.",
     linkedin: "https://linkedin.com/in/abhishek-m",
     email: "abhishek@yourcompany.com",
@@ -930,62 +951,49 @@ export default function Home() {
 
           <div ref={teamCarouselRef} className="team-carousel scrollbar-none" aria-label="Team profiles carousel">
             {extendedTeamMembers.map((member, i) => (
-              <article key={`team-ext-${i}`} className="team-card" tabIndex={0}>
-                <div className="team-card-inner">
-                  <div className="team-card-face team-card-front">
-                    <Image
-                      src={member.image}
-                      alt={`${member.name} profile photo`}
-                      className="team-photo"
-                      width={640}
-                      height={720}
-                    />
-                    <div className="team-meta">
-                      <h3
-                        className="team-name text-lg sm:text-xl"
-                        style={{
-                          "--team-name-start": member.namePalette[0],
-                          "--team-name-mid": member.namePalette[1],
-                          "--team-name-end": member.namePalette[2],
-                        } as React.CSSProperties}
-                      >
-                        {member.name}
-                      </h3>
-                      <p className="text-muted text-sm">{member.role}</p>
-                      <span className="team-tag">{member.tag}</span>
-                    </div>
-                  </div>
+              <article
+                key={`team-ext-${i}`}
+                className="team-card"
+                style={{
+                  "--team-name-start": member.namePalette[0],
+                  "--team-name-mid": member.namePalette[1],
+                  "--team-name-end": member.namePalette[2],
+                  "--team-photo-position": member.imagePosition ?? "center 20%",
+                  "--team-photo-position-mobile": member.mobileImagePosition ?? member.imagePosition ?? "left center",
+                } as React.CSSProperties}
+              >
+                <div className="team-card-media">
+                  <Image
+                    src={member.image}
+                    alt={`${member.name} profile photo`}
+                    className="team-photo"
+                    width={640}
+                    height={720}
+                  />
+                </div>
 
-                  <div className="team-card-face team-card-back">
-                    <div className="space-y-2">
-                      <h3
-                        className="team-name text-xl"
-                        style={{
-                          "--team-name-start": member.namePalette[0],
-                          "--team-name-mid": member.namePalette[1],
-                          "--team-name-end": member.namePalette[2],
-                        } as React.CSSProperties}
-                      >
-                        {member.name}
-                      </h3>
-                      <p className="text-soft text-sm leading-6">{member.bio}</p>
-                    </div>
-                    <div className="team-contact-row">
-                      <a
-                        className="team-contact-btn"
-                        href={member.linkedin}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Open ${member.name} LinkedIn profile`}
-                      >
-                        <Linkedin size={15} />
-                        LinkedIn
-                      </a>
-                      <a className="team-contact-btn" href={`mailto:${member.email}`} aria-label={`Email ${member.name}`}>
-                        <Mail size={15} />
-                        Email
-                      </a>
-                    </div>
+                <div className="team-card-content">
+                  <div className="space-y-3 text-left">
+                    <h3 className="team-name text-lg sm:text-xl">{member.name}</h3>
+                    <p className="text-muted text-sm">{member.role}</p>
+                    <span className="team-tag">{member.tag}</span>
+                    <p className="team-bio text-soft text-sm leading-6">{member.bio}</p>
+                  </div>
+                  <div className="team-contact-row">
+                    <a
+                      className="team-contact-btn"
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${member.name} LinkedIn profile`}
+                    >
+                      <Linkedin size={15} />
+                      LinkedIn
+                    </a>
+                    <a className="team-contact-btn" href={`mailto:${member.email}`} aria-label={`Email ${member.name}`}>
+                      <Mail size={15} />
+                      Email
+                    </a>
                   </div>
                 </div>
               </article>
