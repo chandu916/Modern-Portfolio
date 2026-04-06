@@ -967,8 +967,8 @@ export default function Home() {
                     src={member.image}
                     alt={`${member.name} profile photo`}
                     className="team-photo"
-                    width={640}
-                    height={720}
+                    fill
+                    sizes="(max-width: 479px) 35vw, (max-width: 767px) 36vw, (max-width: 1024px) 22vw, 18rem"
                   />
                 </div>
 
