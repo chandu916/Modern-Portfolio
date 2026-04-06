@@ -2,7 +2,6 @@
 
 import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import type { StaticImageData } from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import abhishekPhoto from "@/public/team/abhishek-m.png";
@@ -290,6 +289,8 @@ const extendedTeamMembers = [
   ...teamMembers,
   ...teamMembers.slice(0, TEAM_CLONE),
 ];
+
+const getTeamImageSrc = (image: TeamMember["image"]) => (typeof image === "string" ? image : image.src);
 
 type ContactFormData = {
   name: string;
@@ -968,12 +969,12 @@ export default function Home() {
                 } as React.CSSProperties}
               >
                 <div className="team-card-media">
-                  <Image
-                    src={member.image}
+                  <img
+                    src={getTeamImageSrc(member.image)}
                     alt={`${member.name} profile photo`}
                     className="team-photo"
-                    fill
-                    sizes="(max-width: 479px) 35vw, (max-width: 767px) 36vw, (max-width: 1024px) 22vw, 18rem"
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
 
