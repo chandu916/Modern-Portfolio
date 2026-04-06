@@ -3,7 +3,12 @@
 import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import type { StaticImageData } from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import abhishekPhoto from "@/public/team/abhishek-m.png";
+import chandhanPhoto from "@/public/team/chandhan-m.jpg";
+import vishnuPhoto from "@/public/team/vishnu-y.png";
+import vivekPhoto from "@/public/team/vivek-m.png";
 
 const starTrails = [
   { left: "8%", top: "12%", delay: "0s", duration: "5.5s" },
@@ -199,7 +204,7 @@ type TeamMember = {
   name: string;
   role: string;
   tag: string;
-  image: string;
+  image: string | StaticImageData;
   imagePosition?: string;
   mobileImagePosition?: string;
   bio: string;
@@ -213,7 +218,7 @@ const teamMembers: TeamMember[] = [
     name: "Chandhan M",
     role: "Frontend Engineer",
     tag: "Frontend Systems",
-    image: "/team/chandhan-m.jpg",
+    image: chandhanPhoto,
     imagePosition: "center 16%",
     mobileImagePosition: "center 18%",
     bio: "Architects scalable frontend systems and builds polished, accessible interfaces with a strong focus on usability.",
@@ -225,7 +230,7 @@ const teamMembers: TeamMember[] = [
     name: "Vishnu Y",
     role: "Full-Stack Developer",
     tag: "API Integrations",
-    image: "/team/vishnu-y.png",
+    image: vishnuPhoto,
     imagePosition: "50% 12%",
     mobileImagePosition: "50% 14%",
     bio: "Delivers full-stack features with reliable backend services and smooth API integrations across product workflows.",
@@ -237,7 +242,7 @@ const teamMembers: TeamMember[] = [
     name: "Vivek M",
     role: "Full-Stack Developer",
     tag: "System Performance",
-    image: "/team/vivek-m.png",
+    image: vivekPhoto,
     imagePosition: "46% 14%",
     mobileImagePosition: "44% 16%",
     bio: "Focuses on performant full-stack systems, optimizing architecture, responsiveness, and production reliability.",
@@ -259,7 +264,7 @@ const teamMembers: TeamMember[] = [
     name: "Abhishek M",
     role: "Cyber Security Engineer",
     tag: "Cybersecurity",
-    image: "/team/abhishek-m.png",
+    image: abhishekPhoto,
     imagePosition: "32% 14%",
     mobileImagePosition: "30% 16%",
     bio: "Strengthens application security through threat analysis, secure engineering practices, and vulnerability awareness.",
