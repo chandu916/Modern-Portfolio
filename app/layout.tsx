@@ -4,6 +4,7 @@ import {
   Cinzel_Decorative,
   DM_Sans,
   Fraunces,
+  Great_Vibes,
   Inter,
   Manrope,
   Outfit,
@@ -75,6 +76,12 @@ const audiowide = Audiowide({
   weight: ["400"],
 });
 
+const greatVibes = Great_Vibes({
+  variable: "--font-great-vibes",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 export const metadata: Metadata = {
   title: "CHANDHAN PORTFOLIO",
   description: "A modern portfolio built with Next.js, TypeScript, and Tailwind CSS.",
@@ -88,7 +95,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${inter.variable} ${outfit.variable} ${poppins.variable} ${spaceGrotesk.variable} ${playfairDisplay.variable} ${fraunces.variable} ${sora.variable} ${dmSans.variable} ${cinzelDecorative.variable} ${audiowide.variable} antialiased`}
+        className={`${manrope.variable} ${inter.variable} ${outfit.variable} ${poppins.variable} ${spaceGrotesk.variable} ${playfairDisplay.variable} ${fraunces.variable} ${sora.variable} ${dmSans.variable} ${cinzelDecorative.variable} ${audiowide.variable} ${greatVibes.variable} antialiased`}
       >
         {children}
       </body>

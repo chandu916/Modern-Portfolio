@@ -1,15 +1,15 @@
 "use client";
 
 import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
-import type { StaticImageData } from "next/image";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image, { type StaticImageData } from "next/image";
+import { ChangeEvent, CSSProperties, FormEvent, MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
 import abhishekPhoto from "@/public/team/abhishek-m.png";
 import chandhanPhoto from "@/public/team/chandhan-m.jpg";
 import vishnuPhoto from "@/public/team/vishnu-y.png";
 import vivekPhoto from "@/public/team/vivek-m.png";
 
-const starTrails = [
+const meteorTrails = [
   { left: "8%", top: "12%", delay: "0s", duration: "5.5s" },
   { left: "18%", top: "26%", delay: "1s", duration: "6.2s" },
   { left: "32%", top: "10%", delay: "1.8s", duration: "5.8s" },
@@ -32,10 +32,60 @@ const starTrails = [
   { left: "78%", top: "64%", delay: "2.4s", duration: "6.4s" },
 ];
 
+const auroraOrbs = [
+  { className: "is-amber", size: "30rem", top: "-8%", left: "-6%", duration: 18 },
+  { className: "is-cyan", size: "24rem", top: "8%", right: "8%", duration: 22 },
+  { className: "is-rose", size: "22rem", bottom: "10%", left: "18%", duration: 20 },
+  { className: "is-gold", size: "28rem", bottom: "-10%", right: "-4%", duration: 24 },
+];
+
+const orbitalNodes = [
+  { left: "12%", top: "18%", delay: "0s" },
+  { left: "26%", top: "54%", delay: "0.8s" },
+  { left: "48%", top: "22%", delay: "1.6s" },
+  { left: "64%", top: "62%", delay: "0.3s" },
+  { left: "82%", top: "34%", delay: "1.1s" },
+  { left: "72%", top: "14%", delay: "1.9s" },
+];
+
+const backgroundThemes = [
+  {
+    id: "aurora",
+    name: "Aurora Mesh",
+    badge: "Aurora",
+    hint: "Warm editorial gradients with slow ribbon motion.",
+  },
+  {
+    id: "grid",
+    name: "Orbital Grid",
+    badge: "Grid",
+    hint: "Sharper product feel with a moving signal grid.",
+  },
+  {
+    id: "meteor",
+    name: "Meteor Veil",
+    badge: "Meteor",
+    hint: "Deeper space look with controlled meteor trails.",
+  },
+] as const;
+
+type BackgroundThemeId = (typeof backgroundThemes)[number]["id"];
+const INTRO_NAME = "Chandhan Madapakula";
+const SECTION_IDS = ["hero", "projects", "experience", "team", "contact"] as const;
+
+type SectionId = (typeof SECTION_IDS)[number];
+
 const stackShowcase = {
   name: "Radial Skill Radar",
   note: "Current strengths across product engineering, API systems, cloud delivery, and AI-ready workflows.",
 };
+
+const navItems = [
+  { id: "projects", label: "Projects" },
+  { id: "experience", label: "Experience" },
+  { id: "team", label: "Team" },
+  { id: "contact", label: "Contact" },
+];
 
 
 const featuredProjects = [
@@ -300,9 +350,164 @@ type ContactFormData = {
   message: string;
 };
 
+function LogoToggle({
+  currentTheme,
+  onToggle,
+  className = "",
+}: {
+  currentTheme: (typeof backgroundThemes)[number];
+  onToggle: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      className={`site-logo site-logo-toggle ${className}`.trim()}
+      aria-label={`Switch background. Current background is ${currentTheme.name}`}
+      title={`Switch background · ${currentTheme.name}`}
+      onClick={onToggle}
+    >
+      <span className="logo-aura" aria-hidden="true" />
+      <span className="logo-wordmark" data-text="CHANDU">CHANDU</span>
+      <span className="logo-theme-tag" aria-hidden="true">{currentTheme.badge}</span>
+    </button>
+  );
+}
+
+function BackgroundStage({ activeThemeId }: { activeThemeId: BackgroundThemeId }) {
+  return (
+    <div className="background-stage pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
+      <div className="background-foundation" />
+      <AnimatePresence mode="wait">
+        {activeThemeId === "aurora" ? (
+          <motion.div
+            key="aurora"
+            className="background-scene aurora-scene"
+            initial={{ opacity: 0, scale: 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="aurora-gradient" />
+            <div className="aurora-ribbons" />
+            {auroraOrbs.map((orb, index) => (
+              <motion.span
+                key={`aurora-orb-${index}`}
+                className={`aurora-orb ${orb.className}`}
+                style={{
+                  width: orb.size,
+                  height: orb.size,
+                  top: orb.top,
+                  right: orb.right,
+                  bottom: orb.bottom,
+                  left: orb.left,
+                }}
+                animate={{
+                  x: [0, index % 2 === 0 ? 28 : -22, 0],
+                  y: [0, index % 2 === 0 ? -18 : 20, 0],
+                  scale: [1, 1.06, 1],
+                }}
+                transition={{ duration: orb.duration, repeat: Infinity, ease: "easeInOut" }}
+              />
+            ))}
+            <div className="aurora-noise" />
+          </motion.div>
+        ) : null}
+
+        {activeThemeId === "grid" ? (
+          <motion.div
+            key="grid"
+            className="background-scene orbital-scene"
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="orbital-glow orbital-glow-left" />
+            <div className="orbital-glow orbital-glow-right" />
+            <div className="orbital-grid-plane" />
+            <div className="orbital-ring orbital-ring-one" />
+            <div className="orbital-ring orbital-ring-two" />
+            <div className="orbital-beam" />
+            {orbitalNodes.map((node, index) => (
+              <span
+                key={`orbital-node-${index}`}
+                className="orbital-node"
+                style={{ ...node, "--node-delay": node.delay } as CSSProperties}
+              />
+            ))}
+          </motion.div>
+        ) : null}
+
+        {activeThemeId === "meteor" ? (
+          <motion.div
+            key="meteor"
+            className="background-scene meteor-scene"
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="meteor-gradient" />
+            <div className="meteor-nebula meteor-nebula-one" />
+            <div className="meteor-nebula meteor-nebula-two" />
+            <div className="meteor-starfield" />
+            <div className="meteor-starfield meteor-starfield-secondary" />
+            <div className="meteor-trails" aria-hidden="true">
+              {meteorTrails.map((star, index) => (
+                <span
+                  key={`meteor-${index}`}
+                  className="theme-star"
+                  style={{
+                    "--star-left": star.left,
+                    "--star-top": star.top,
+                    "--star-delay": star.delay,
+                    "--star-duration": star.duration,
+                  } as CSSProperties}
+                />
+              ))}
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+      <div className="background-vignette" />
+    </div>
+  );
+}
+
 export default function Home() {
-  const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const audioAssetsRef = useRef<{
+    sectionReveal: HTMLAudioElement;
+  } | null>(null);
+  const introTickPoolRef = useRef<HTMLAudioElement[]>([]);
+  const introTickCursorRef = useRef(0);
+  const sectionRefs = useRef<Record<SectionId, HTMLElement | null>>({
+    hero: null,
+    projects: null,
+    experience: null,
+    team: null,
+    contact: null,
+  });
+  const revealedSectionsRef = useRef<Set<string>>(new Set());
+  const soundEnabledRef = useRef(false);
+  const scrollLockRef = useRef(false);
+  const touchStartYRef = useRef<number | null>(null);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isIntroVisible, setIsIntroVisible] = useState(true);
+  const [hasIntroStarted, setHasIntroStarted] = useState(false);
+  const [introText, setIntroText] = useState("");
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  const [activeBackgroundIndex, setActiveBackgroundIndex] = useState(0);
   const [activeTeamIndex, setActiveTeamIndex] = useState(0);
+  const [engagedSections, setEngagedSections] = useState<Record<SectionId, boolean>>({
+    hero: true,
+    projects: false,
+    experience: false,
+    team: false,
+    contact: false,
+  });
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -315,13 +520,169 @@ export default function Home() {
   const [submitMessage, setSubmitMessage] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
   const [phoneError, setPhoneError] = useState("");
+  const lastScrollYRef = useRef(0);
   const teamCarouselRef = useRef<HTMLDivElement | null>(null);
   const teamExtRef = useRef(TEAM_CLONE);
   const teamScrollTimerRef = useRef<number | null>(null);
 
+  const activeBackground = backgroundThemes[activeBackgroundIndex];
+  const activeSectionId = SECTION_IDS[activeSectionIndex];
+  const isPageReady = !isIntroVisible;
+
+  const cycleBackground = () => {
+    setActiveBackgroundIndex((prev) => (prev + 1) % backgroundThemes.length);
+  };
+
+  const setSectionRef = (sectionId: SectionId) => (node: HTMLElement | null) => {
+    sectionRefs.current[sectionId] = node;
+  };
+
+  const lockSectionScroll = (duration: number) => {
+    scrollLockRef.current = true;
+    window.setTimeout(() => {
+      scrollLockRef.current = false;
+    }, duration);
+  };
+
+  const navigateToSection = (nextIndex: number) => {
+    if (nextIndex < 0 || nextIndex >= SECTION_IDS.length || nextIndex === activeSectionIndex) {
+      return;
+    }
+
+    const nextSectionId = SECTION_IDS[nextIndex];
+    sectionRefs.current[nextSectionId]?.scrollTo({ top: 0, behavior: "auto" });
+    setActiveSectionIndex(nextIndex);
+    window.history.replaceState(null, "", nextSectionId === "hero" ? window.location.pathname : `#${nextSectionId}`);
+    lockSectionScroll(980);
+  };
+
+  const stepSectionEvent = useEffectEvent((direction: 1 | -1) => {
+    if (!isPageReady || isMobileNavOpen || scrollLockRef.current) {
+      return;
+    }
+
+    const currentSectionId = SECTION_IDS[activeSectionIndex];
+    const currentSection = sectionRefs.current[currentSectionId];
+
+    if (!engagedSections[currentSectionId]) {
+      setEngagedSections((prev) => ({ ...prev, [currentSectionId]: true }));
+      lockSectionScroll(760);
+      return;
+    }
+
+    if (currentSection) {
+      const maxScroll = currentSection.scrollHeight - currentSection.clientHeight;
+      const stepAmount = Math.max(currentSection.clientHeight * 0.72, 220);
+
+      if (direction > 0 && currentSection.scrollTop < maxScroll - 6) {
+        currentSection.scrollTo({ top: Math.min(maxScroll, currentSection.scrollTop + stepAmount), behavior: "smooth" });
+        lockSectionScroll(720);
+        return;
+      }
+
+      if (direction < 0 && currentSection.scrollTop > 6) {
+        currentSection.scrollTo({ top: Math.max(0, currentSection.scrollTop - stepAmount), behavior: "smooth" });
+        lockSectionScroll(720);
+        return;
+      }
+    }
+
+    navigateToSection(activeSectionIndex + direction);
+  });
+
+  const triggerVibration = (pattern: number | number[]) => {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(pattern);
+    }
+  };
+
+  const replayAudio = (audio: HTMLAudioElement | undefined | null) => {
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    void audio.play().catch(() => undefined);
+  };
+
+  const playTypingTick = () => {
+    if (!soundEnabledRef.current) return;
+    const pool = introTickPoolRef.current;
+    if (pool.length === 0) return;
+    const audio = pool[introTickCursorRef.current % pool.length];
+    introTickCursorRef.current += 1;
+    replayAudio(audio);
+    triggerVibration(8);
+  };
+
+  const playSectionRevealSound = () => {
+    if (!soundEnabledRef.current) return;
+    replayAudio(audioAssetsRef.current?.sectionReveal);
+    triggerVibration(12);
+  };
+
+  const handleEnableSound = async () => {
+    soundEnabledRef.current = true;
+    setIsSoundEnabled(true);
+    setHasIntroStarted(true);
+  };
+
+  const handleStartWithoutSound = () => {
+    soundEnabledRef.current = false;
+    setIsSoundEnabled(false);
+    setHasIntroStarted(true);
+  };
+
+  const playTypingTickEvent = useEffectEvent(() => {
+    playTypingTick();
+  });
+
+  const playSectionRevealSoundEvent = useEffectEvent(() => {
+    playSectionRevealSound();
+  });
+
+  useEffect(() => {
+    soundEnabledRef.current = isSoundEnabled;
+  }, [isSoundEnabled]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const sectionReveal = new Audio("/sounds/section-reveal.wav");
+    sectionReveal.preload = "auto";
+    sectionReveal.volume = 0.28;
+
+    const tickPool = Array.from({ length: 4 }, () => {
+      const audio = new Audio("/sounds/intro-tick.wav");
+      audio.preload = "auto";
+      audio.volume = 0.16;
+      return audio;
+    });
+
+    audioAssetsRef.current = { sectionReveal };
+    introTickPoolRef.current = tickPool;
+
+    return () => {
+      sectionReveal.pause();
+      tickPool.forEach((audio) => audio.pause());
+      audioAssetsRef.current = null;
+      introTickPoolRef.current = [];
+    };
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
-      setIsHeaderScrolled(window.scrollY > 12);
+      const currentScrollY = window.scrollY;
+
+      if (shellRef.current) {
+        const cappedScroll = Math.min(currentScrollY, 1800);
+        shellRef.current.style.setProperty("--scroll-shift", `${cappedScroll * -0.06}px`);
+        shellRef.current.style.setProperty("--scroll-drift", `${cappedScroll * 0.045}px`);
+        shellRef.current.style.setProperty("--scroll-tilt", `${cappedScroll * 0.012}deg`);
+        shellRef.current.style.setProperty("--scroll-fade", `${Math.max(0.34, 1 - cappedScroll / 2000)}`);
+      }
+
+      lastScrollYRef.current = currentScrollY;
     };
 
     handleScroll();
@@ -330,7 +691,189 @@ export default function Home() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+  }, [activeSectionIndex]);
+
+  useEffect(() => {
+    if (!isPageReady) {
+      return;
+    }
+
+    const shellNode = shellRef.current;
+
+    const handleWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) < 10) return;
+      event.preventDefault();
+      stepSectionEvent(event.deltaY > 0 ? 1 : -1);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        stepSectionEvent(1);
+      }
+
+      if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        stepSectionEvent(-1);
+      }
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (touchStartYRef.current === null) return;
+
+      const endY = event.changedTouches[0]?.clientY ?? touchStartYRef.current;
+      const deltaY = touchStartYRef.current - endY;
+      touchStartYRef.current = null;
+
+      if (Math.abs(deltaY) < 42) return;
+      stepSectionEvent(deltaY > 0 ? 1 : -1);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+    shellNode?.addEventListener("touchstart", handleTouchStart, { passive: true });
+    shellNode?.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("keydown", handleKeyDown);
+      shellNode?.removeEventListener("touchstart", handleTouchStart);
+      shellNode?.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isPageReady, isMobileNavOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 640) {
+        setIsMobileNavOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!hasIntroStarted) {
+      return;
+    }
+
+    let typingTimer: number | null = null;
+    let finishTimer: number | null = null;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isDesktopViewport = window.matchMedia("(min-width: 1024px)").matches;
+    const typingInterval = isDesktopViewport ? 106 : 74;
+    const completionPause = isDesktopViewport ? 2200 : 1100;
+    const reducedMotionPause = isDesktopViewport ? 1100 : 700;
+
+    if (reducedMotion) {
+      setIntroText(INTRO_NAME);
+      finishTimer = window.setTimeout(() => setIsIntroVisible(false), reducedMotionPause);
+      return () => {
+        if (finishTimer !== null) window.clearTimeout(finishTimer);
+      };
+    }
+
+    let characterIndex = 0;
+    typingTimer = window.setInterval(() => {
+      characterIndex += 1;
+      setIntroText(INTRO_NAME.slice(0, characterIndex));
+      playTypingTickEvent();
+
+      if (characterIndex >= INTRO_NAME.length && typingTimer !== null) {
+        window.clearInterval(typingTimer);
+        typingTimer = null;
+        finishTimer = window.setTimeout(() => setIsIntroVisible(false), completionPause);
+      }
+    }, typingInterval);
+
+    return () => {
+      if (typingTimer !== null) window.clearInterval(typingTimer);
+      if (finishTimer !== null) window.clearTimeout(finishTimer);
+    };
+  }, [hasIntroStarted]);
+
+  useEffect(() => {
+    if (!isPageReady) {
+      return;
+    }
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>(".page-section"));
+    if (sections.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          const target = entry.target as HTMLElement;
+          const sectionKey = target.id || target.dataset.section || target.className;
+          if (revealedSectionsRef.current.has(sectionKey)) {
+            return;
+          }
+
+          revealedSectionsRef.current.add(sectionKey);
+          playSectionRevealSoundEvent();
+        });
+      },
+      {
+        threshold: 0.55,
+      },
+    );
+
+    sections.forEach((section, index) => {
+      section.dataset.section = `section-${index}`;
+      observer.observe(section);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isPageReady, isSoundEnabled]);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isIntroVisible, isMobileNavOpen]);
+
+  useEffect(() => {
+    if (isIntroVisible) {
+      return;
+    }
+
+    if (!isMobileNavOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileNavOpen(false);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isMobileNavOpen, isIntroVisible]);
 
   useEffect(() => {
     const carousel = teamCarouselRef.current;
@@ -447,20 +990,15 @@ export default function Home() {
     setActiveTeamIndex(((prevExt - TEAM_CLONE) % teamMembers.length + teamMembers.length) % teamMembers.length);
   };
 
-  const handleSmoothNav = (event: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+  const handleSmoothNav = (event: MouseEvent<HTMLAnchorElement>, targetId: string) => {
     event.preventDefault();
 
-    const target = document.getElementById(targetId);
-    if (!target) {
-      return;
+    const nextIndex = SECTION_IDS.indexOf(targetId as SectionId);
+    if (nextIndex !== -1) {
+      navigateToSection(nextIndex);
     }
 
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-
-    window.history.replaceState(null, "", `#${targetId}`);
+    setIsMobileNavOpen(false);
   };
 
   const handleInputChange = (
@@ -564,74 +1102,181 @@ export default function Home() {
     }
   };
 
-  return (
-    <div className="theme-shell is-gold-galaxy relative isolate min-h-screen overflow-hidden px-4 pb-16 pt-4 sm:px-6 sm:pb-20 sm:pt-6 md:px-8 lg:px-10">
-      <div className="theme-backdrop pointer-events-none absolute inset-0 z-0" />
-      <>
-        <div className="gold-galaxy-nebula pointer-events-none absolute inset-0 z-10" aria-hidden="true" />
-        <div className="theme-stars pointer-events-none absolute inset-0 z-20" aria-hidden="true">
-          {starTrails.map((star, index) => (
-            <span
-              key={`star-${index}`}
-              className="theme-star"
-              style={{
-                "--star-left": star.left,
-                "--star-top": star.top,
-                "--star-delay": star.delay,
-                "--star-duration": star.duration,
-              } as React.CSSProperties}
-            />
-          ))}
-        </div>
-      </>
+  const getSectionClassName = (sectionId: SectionId, extraClassName = "") => (
+    `page-section ${activeSectionId === sectionId ? "is-active" : ""} ${engagedSections[sectionId] ? "is-engaged" : ""} ${extraClassName}`.trim()
+  );
 
-      <header className={`site-header ${isHeaderScrolled ? "is-scrolled" : ""}`}>
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="site-logo" aria-label="CHANDU brand mark" role="img">
-            <span className="logo-aura" aria-hidden="true" />
-            <span className="logo-wordmark" data-text="CHANDU">CHANDU</span>
+  return (
+    <div
+      ref={shellRef}
+      className="theme-shell relative isolate min-h-screen overflow-hidden px-4 sm:px-6 md:px-8 lg:px-10"
+      data-bg-theme={activeBackground.id}
+    >
+      <BackgroundStage activeThemeId={activeBackground.id} />
+
+      <AnimatePresence>
+        {isIntroVisible ? (
+          <motion.div
+            key="intro-overlay"
+            className="intro-overlay fixed inset-0 z-[120] flex items-center justify-center px-6"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="intro-panel w-full max-w-6xl text-center"
+              initial={{ opacity: 0, scale: 0.94, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.015, y: -12, filter: "blur(12px)" }}
+              transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {!hasIntroStarted ? (
+                <div className="intro-sound-row">
+                  <p className="intro-kicker">Premium Intro</p>
+                  <p className="intro-sound-note">Enable sound to hear the typing haptics and premium section reveal cues before the name animation begins.</p>
+                  <div className="intro-actions">
+                    <button type="button" className="sound-toggle-btn" onClick={() => void handleEnableSound()}>
+                      Enable Premium Sound
+                    </button>
+                    <button type="button" className="sound-toggle-btn is-secondary" onClick={handleStartWithoutSound}>
+                      Continue Silently
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="intro-kicker">Portfolio Opening</p>
+                  <motion.h1
+                    className="intro-name"
+                    exit={{ clipPath: "inset(0 100% 0 0)", filter: "blur(12px)", opacity: 0.12 }}
+                    transition={{ duration: 0.86, ease: [0.4, 0, 1, 1] }}
+                  >
+                    {introText}
+                    <span className="intro-caret" aria-hidden="true" />
+                  </motion.h1>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <div className={`transition-[opacity,filter,transform] duration-[950ms] ${isPageReady ? "opacity-100 blur-0 translate-y-0" : "pointer-events-none opacity-0 blur-sm translate-y-4"}`}>
+
+      <button
+        type="button"
+        className={`mobile-nav-toggle ${isMobileNavOpen ? "is-open" : ""} is-visible`}
+        aria-label={isMobileNavOpen ? "Hide navigation" : "Show navigation"}
+        aria-expanded={isMobileNavOpen}
+        aria-controls="mobile-site-nav"
+        onClick={() => setIsMobileNavOpen((prev) => !prev)}
+      >
+        <span className="mobile-nav-toggle-label">C</span>
+      </button>
+
+      <div
+        className={`mobile-nav-backdrop ${isMobileNavOpen ? "is-open" : ""}`}
+        aria-hidden={!isMobileNavOpen}
+        onClick={() => setIsMobileNavOpen(false)}
+      />
+
+      <div
+        id="mobile-site-nav"
+        className={`mobile-nav-panel ${isMobileNavOpen ? "is-open" : ""}`}
+        aria-hidden={!isMobileNavOpen}
+      >
+        <div className="mobile-nav-panel-inner">
+          <div className="mobile-nav-header">
+            <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} className="mobile-site-logo" />
           </div>
 
+          <nav className="mobile-nav-links" aria-label="Mobile navigation">
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                className="nav-link mobile-nav-link"
+                href={`#${item.id}`}
+                onClick={(event) => handleSmoothNav(event, item.id)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      <header className="site-header is-scrolled">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} />
+
           <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
-          <a className="nav-link" href="#projects" onClick={(event) => handleSmoothNav(event, "projects")}>
-            Projects
-          </a>
-          <a className="nav-link" href="#experience" onClick={(event) => handleSmoothNav(event, "experience")}>
-            Experience
-          </a>
-          <a className="nav-link" href="#team" onClick={(event) => handleSmoothNav(event, "team")}>
-            Team
-          </a>
-          <a className="nav-link" href="#contact" onClick={(event) => handleSmoothNav(event, "contact")}>
-            Contact
-          </a>
+          {navItems.map((item) => (
+            <a key={item.id} className="nav-link" href={`#${item.id}`} onClick={(event) => handleSmoothNav(event, item.id)}>
+              {item.label}
+            </a>
+          ))}
         </div>
         </div>
         </div>
       </header>
 
-      <main className="site-main relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-14 lg:gap-16">
-        <section className="grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.15fr_0.85fr] md:items-end lg:gap-12">
+      <div className="site-viewport">
+      <main
+        className="site-main relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-0"
+        style={{ transform: `translate3d(0, calc(-${activeSectionIndex} * var(--page-step-height)), 0)` }}
+      >
+        <section
+          id="hero"
+          ref={setSectionRef("hero")}
+          className={getSectionClassName("hero", "hero-section grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.1fr_0.9fr] md:items-center lg:gap-12")}
+        >
+          <div className="section-stage section-stage-primary">
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
+            initial={{ opacity: 0, x: -48, y: 18 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             className="space-y-5 sm:space-y-6"
           >
-            <div className="flex flex-wrap items-center gap-2.5">
+            <motion.div
+              initial={{ opacity: 0, y: -26 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.08 }}
+              className="flex flex-wrap items-center gap-2.5"
+            >
               <p className="eyebrow">
                 <Sparkles size={14} />
                 Open For Opportunities
               </p>
-            </div>
-            <h1 className="max-w-3xl text-balance font-display text-4xl leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
+              <p className="theme-pill">
+                {activeBackground.name}
+                <span className="theme-pill-divider" aria-hidden="true" />
+                Tap the logo to switch
+              </p>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, x: -72 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
+              className="max-w-3xl text-balance font-display text-4xl leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl"
+            >
               I build polished digital products that ship fast and feel premium.
-            </h1>
-            <p className="text-muted max-w-2xl text-sm leading-6 sm:text-base sm:leading-7 lg:text-lg">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, x: 56 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.62, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="text-muted max-w-2xl text-sm leading-6 sm:text-base sm:leading-7 lg:text-lg"
+            >
               Full-stack engineer focused on modern web architecture, product thinking, and performance-first execution.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 36 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
+            >
               <a className="btn-primary w-full justify-center sm:w-auto" href="#projects">
                 View Work
                 <ArrowUpRight size={16} />
@@ -639,13 +1284,15 @@ export default function Home() {
               <a className="btn-secondary w-full justify-center sm:w-auto" href="#contact">
                 Let&apos;s Talk
               </a>
-            </div>
+            </motion.div>
           </motion.div>
+          </div>
 
+          <div className="section-stage section-stage-secondary">
           <motion.aside
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
+            initial={{ opacity: 0, x: 64, y: 10 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
             className="card stack-lab md:self-stretch"
           >
             <div className="stack-lab-head">
@@ -747,10 +1394,11 @@ export default function Home() {
               <p className="text-muted text-sm">Based in India · Available remotely worldwide</p>
             </div>
           </motion.aside>
+          </div>
         </section>
 
-        <section id="projects" className="space-y-4 sm:space-y-6">
-          <div className="space-y-2">
+        <section id="projects" ref={setSectionRef("projects")} className={getSectionClassName("projects", "space-y-4 sm:space-y-6")}>
+          <div className="section-stage section-stage-primary space-y-2">
             <p className="text-dim text-xs font-semibold uppercase tracking-[0.18em]">Some Of My Work</p>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Websites & Products</h2>
             <p className="text-muted max-w-3xl text-[0.92rem] leading-6 sm:text-base">
@@ -758,7 +1406,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-3.5 sm:gap-5 md:grid-cols-2 xl:grid-cols-6">
+          <div className="section-stage section-stage-secondary grid gap-3.5 sm:gap-5 md:grid-cols-2 xl:grid-cols-6">
             {featuredProjects.map((project, index) => (
               <motion.article
                 key={project.title}
@@ -849,9 +1497,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="experience" className="space-y-5 sm:space-y-6">
-          <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
-          <div className="experience-timeline">
+        <section id="experience" ref={setSectionRef("experience")} className={getSectionClassName("experience", "space-y-5 sm:space-y-6")}>
+          <h2 className="section-stage section-stage-primary font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
+          <div className="section-stage section-stage-secondary experience-timeline">
             <div className="experience-line" aria-hidden="true" />
             {experience.map((item, index) => (
               <motion.article
@@ -923,15 +1571,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="team" className="space-y-5 sm:space-y-6">
-          <div className="space-y-2">
+        <section id="team" ref={setSectionRef("team")} className={getSectionClassName("team", "space-y-5 sm:space-y-6")}>
+          <div className="section-stage section-stage-primary space-y-2">
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Our Team</h2>
             <p className="text-muted max-w-3xl text-sm leading-6 sm:text-base">
               Meet the people behind our product delivery. Hover on each profile card to view details and contact options.
             </p>
           </div>
 
-          <div className="team-controls" aria-label="Team carousel controls">
+          <div className="section-stage section-stage-secondary team-controls" aria-label="Team carousel controls">
             <button type="button" className="team-nav-btn" onClick={handlePrevTeam} aria-label="Show previous profile">
               <ChevronLeft size={18} />
             </button>
@@ -955,7 +1603,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div ref={teamCarouselRef} className="team-carousel scrollbar-none" aria-label="Team profiles carousel">
+          <div ref={teamCarouselRef} className="section-stage section-stage-tertiary team-carousel scrollbar-none" aria-label="Team profiles carousel">
             {extendedTeamMembers.map((member, i) => (
               <article
                 key={`team-ext-${i}`}
@@ -969,12 +1617,13 @@ export default function Home() {
                 } as React.CSSProperties}
               >
                 <div className="team-card-media">
-                  <img
+                  <Image
                     src={getTeamImageSrc(member.image)}
                     alt={`${member.name} profile photo`}
+                    fill
+                    sizes="(max-width: 767px) 36vw, 240px"
                     className="team-photo"
-                    loading="eager"
-                    decoding="async"
+                    priority={i < TEAM_CLONE + 2}
                   />
                 </div>
 
@@ -1007,8 +1656,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" className="card space-y-6 sm:space-y-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <section id="contact" ref={setSectionRef("contact")} className={getSectionClassName("contact", "card space-y-6 sm:space-y-8")}>
+          <div className="section-stage section-stage-primary flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="font-display text-2xl sm:text-3xl">Contact Us</h2>
               <p className="text-muted mt-2 max-w-2xl text-sm leading-6">
@@ -1028,7 +1677,7 @@ export default function Home() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="grid gap-4 sm:gap-5">
+          <form onSubmit={handleSubmit} className="section-stage section-stage-secondary grid gap-4 sm:gap-5">
             <div className="grid gap-4 md:grid-cols-2">
               <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Full Name *
@@ -1146,6 +1795,8 @@ export default function Home() {
           </form>
         </section>
       </main>
+      </div>
+      </div>
     </div>
   );
 }
