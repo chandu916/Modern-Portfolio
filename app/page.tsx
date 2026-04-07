@@ -3,34 +3,11 @@
 import { ArrowUpRight, ChevronLeft, ChevronRight, Github, Linkedin, Mail, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image, { type StaticImageData } from "next/image";
-import { ChangeEvent, CSSProperties, FormEvent, MouseEvent, useEffect, useEffectEvent, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, FormEvent, MouseEvent, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from "react";
 import abhishekPhoto from "@/public/team/abhishek-m.png";
 import chandhanPhoto from "@/public/team/chandhan-m.jpg";
 import vishnuPhoto from "@/public/team/vishnu-y.png";
 import vivekPhoto from "@/public/team/vivek-m.png";
-
-const meteorTrails = [
-  { left: "8%", top: "12%", delay: "0s", duration: "5.5s" },
-  { left: "18%", top: "26%", delay: "1s", duration: "6.2s" },
-  { left: "32%", top: "10%", delay: "1.8s", duration: "5.8s" },
-  { left: "44%", top: "22%", delay: "0.8s", duration: "6.6s" },
-  { left: "58%", top: "8%", delay: "2.1s", duration: "5.9s" },
-  { left: "72%", top: "18%", delay: "1.4s", duration: "6.4s" },
-  { left: "84%", top: "11%", delay: "2.8s", duration: "5.7s" },
-  { left: "92%", top: "28%", delay: "0.3s", duration: "6.1s" },
-  { left: "6%", top: "38%", delay: "1.2s", duration: "6.8s" },
-  { left: "16%", top: "46%", delay: "2.9s", duration: "6.1s" },
-  { left: "28%", top: "34%", delay: "0.6s", duration: "5.9s" },
-  { left: "39%", top: "44%", delay: "2.2s", duration: "6.5s" },
-  { left: "52%", top: "36%", delay: "1.5s", duration: "5.6s" },
-  { left: "66%", top: "43%", delay: "3.1s", duration: "6.3s" },
-  { left: "77%", top: "39%", delay: "1.9s", duration: "5.8s" },
-  { left: "90%", top: "47%", delay: "0.4s", duration: "6.2s" },
-  { left: "12%", top: "58%", delay: "2.6s", duration: "6.7s" },
-  { left: "34%", top: "62%", delay: "0.9s", duration: "6s" },
-  { left: "56%", top: "60%", delay: "1.7s", duration: "5.7s" },
-  { left: "78%", top: "64%", delay: "2.4s", duration: "6.4s" },
-];
 
 const auroraOrbs = [
   { className: "is-amber", size: "30rem", top: "-8%", left: "-6%", duration: 18 },
@@ -61,12 +38,6 @@ const backgroundThemes = [
     badge: "Grid",
     hint: "Sharper product feel with a moving signal grid.",
   },
-  {
-    id: "meteor",
-    name: "Meteor Veil",
-    badge: "Meteor",
-    hint: "Deeper space look with controlled meteor trails.",
-  },
 ] as const;
 
 type BackgroundThemeId = (typeof backgroundThemes)[number]["id"];
@@ -77,12 +48,67 @@ const stackShowcase = {
   note: "Current strengths across product engineering, API systems, cloud delivery, and AI-ready workflows.",
 };
 
+type NavIconKind = "projects" | "experience" | "team" | "contact";
+
 const navItems = [
-  { id: "projects", label: "Projects" },
-  { id: "experience", label: "Experience" },
-  { id: "team", label: "Team" },
-  { id: "contact", label: "Contact" },
+  { id: "projects", label: "Projects", icon: "projects" as NavIconKind },
+  { id: "experience", label: "Experience", icon: "experience" as NavIconKind },
+  { id: "team", label: "Team", icon: "team" as NavIconKind },
+  { id: "contact", label: "Contact", icon: "contact" as NavIconKind },
 ];
+
+function NavGlyph({ kind, gradientId }: { kind: NavIconKind; gradientId: string }) {
+  const sharedProps = {
+    stroke: `url(#${gradientId})`,
+    strokeWidth: 1.8,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    fill: "none",
+  };
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="nav-link-svg">
+      <defs>
+        <linearGradient id={gradientId} x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="var(--mobile-nav-icon-start)" />
+          <stop offset="55%" stopColor="var(--mobile-nav-icon-mid)" />
+          <stop offset="100%" stopColor="var(--mobile-nav-icon-end)" />
+        </linearGradient>
+      </defs>
+      {kind === "projects" ? (
+        <>
+          <rect x="4" y="4" width="6" height="6" rx="1.5" {...sharedProps} />
+          <rect x="14" y="4" width="6" height="6" rx="1.5" {...sharedProps} />
+          <rect x="4" y="14" width="6" height="6" rx="1.5" {...sharedProps} />
+          <rect x="14" y="14" width="6" height="6" rx="1.5" {...sharedProps} />
+        </>
+      ) : null}
+      {kind === "experience" ? (
+        <>
+          <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5" {...sharedProps} />
+          <path d="M4.5 9.5h15a1.5 1.5 0 0 1 1.5 1.5v6a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17V11a1.5 1.5 0 0 1 1.5-1.5Z" {...sharedProps} />
+          <path d="M10 13h4" {...sharedProps} />
+        </>
+      ) : null}
+      {kind === "team" ? (
+        <>
+          <path d="M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" {...sharedProps} />
+          <path d="M6.5 13.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" {...sharedProps} />
+          <path d="M17.5 13.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" {...sharedProps} />
+          <path d="M5 19a4.5 4.5 0 0 1 4.5-4.5h5A4.5 4.5 0 0 1 19 19" {...sharedProps} />
+          <path d="M2.5 19a3.4 3.4 0 0 1 3.4-3.4" {...sharedProps} />
+          <path d="M21.5 19a3.4 3.4 0 0 0-3.4-3.4" {...sharedProps} />
+        </>
+      ) : null}
+      {kind === "contact" ? (
+        <>
+          <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" {...sharedProps} />
+          <path d="m5.5 7.5 6.5 5 6.5-5" {...sharedProps} />
+        </>
+      ) : null}
+    </svg>
+  );
+}
 
 
 const featuredProjects = [
@@ -297,16 +323,6 @@ const teamMembers: TeamMember[] = [
     namePalette: ["#86efac", "#facc15", "#fb7185"],
   },
   {
-    name: "Sai M",
-    role: "Data Engineer",
-    tag: "Data Engineering",
-    image: "https://i.pravatar.cc/640?img=32",
-    bio: "Builds robust data pipelines and structures that support analytics, reporting, and decision-ready information.",
-    linkedin: "https://linkedin.com/in/sai-m",
-    email: "sai@yourcompany.com",
-    namePalette: ["#f9a8d4", "#f472b6", "#c084fc"],
-  },
-  {
     name: "Abhishek M",
     role: "Cyber Security Engineer",
     tag: "Cybersecurity",
@@ -318,26 +334,8 @@ const teamMembers: TeamMember[] = [
     email: "abhishek@yourcompany.com",
     namePalette: ["#fde68a", "#f97316", "#ef4444"],
   },
-  {
-    name: "Shalini",
-    role: "Quality Engineer",
-    tag: "Quality Assurance",
-    image: "https://i.pravatar.cc/640?img=25",
-    bio: "Ensures product quality with disciplined testing, validation strategies, and an eye for release confidence.",
-    linkedin: "https://linkedin.com/in/shalini",
-    email: "shalini@yourcompany.com",
-    namePalette: ["#a5f3fc", "#22d3ee", "#f0abfc"],
-  },
-];
 
-const TEAM_CLONE = 3;
-const extendedTeamMembers = [
-  ...teamMembers.slice(-TEAM_CLONE),
-  ...teamMembers,
-  ...teamMembers.slice(0, TEAM_CLONE),
 ];
-
-const getTeamImageSrc = (image: TeamMember["image"]) => (typeof image === "string" ? image : image.src);
 
 type ContactFormData = {
   name: string;
@@ -346,6 +344,15 @@ type ContactFormData = {
   subject: string;
   message: string;
 };
+
+const TEAM_CLONE = Math.min(2, teamMembers.length);
+const extendedTeamMembers = [
+  ...teamMembers.slice(-TEAM_CLONE),
+  ...teamMembers,
+  ...teamMembers.slice(0, TEAM_CLONE),
+];
+
+const getTeamImageSrc = (image: TeamMember["image"]) => (typeof image === "string" ? image : image.src);
 
 function LogoToggle({
   currentTheme,
@@ -366,7 +373,6 @@ function LogoToggle({
     >
       <span className="logo-aura" aria-hidden="true" />
       <span className="logo-wordmark" data-text="CHANDU">CHANDU</span>
-      <span className="logo-theme-tag" aria-hidden="true">{currentTheme.badge}</span>
     </button>
   );
 }
@@ -436,36 +442,6 @@ function BackgroundStage({ activeThemeId }: { activeThemeId: BackgroundThemeId }
           </motion.div>
         ) : null}
 
-        {activeThemeId === "meteor" ? (
-          <motion.div
-            key="meteor"
-            className="background-scene meteor-scene"
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.01 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="meteor-gradient" />
-            <div className="meteor-nebula meteor-nebula-one" />
-            <div className="meteor-nebula meteor-nebula-two" />
-            <div className="meteor-starfield" />
-            <div className="meteor-starfield meteor-starfield-secondary" />
-            <div className="meteor-trails" aria-hidden="true">
-              {meteorTrails.map((star, index) => (
-                <span
-                  key={`meteor-${index}`}
-                  className="theme-star"
-                  style={{
-                    "--star-left": star.left,
-                    "--star-top": star.top,
-                    "--star-delay": star.delay,
-                    "--star-duration": star.duration,
-                  } as CSSProperties}
-                />
-              ))}
-            </div>
-          </motion.div>
-        ) : null}
       </AnimatePresence>
       <div className="background-vignette" />
     </div>
@@ -479,6 +455,9 @@ export default function Home() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const soundEnabledRef = useRef(false);
   const [isIntroVisible, setIsIntroVisible] = useState(true);
+  const [isIntroExiting, setIsIntroExiting] = useState(false);
+  const [isSafariIntro, setIsSafariIntro] = useState(false);
+  const [isNonChromeBrowser, setIsNonChromeBrowser] = useState(false);
   const [hasIntroStarted, setHasIntroStarted] = useState(false);
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
   const [introText, setIntroText] = useState("");
@@ -503,7 +482,7 @@ export default function Home() {
   const teamScrollTimerRef = useRef<number | null>(null);
 
   const activeBackground = backgroundThemes[activeBackgroundIndex];
-  const isPageReady = !isIntroVisible;
+  const isPageReady = isSafariIntro ? !isIntroVisible : isIntroExiting || !isIntroVisible;
 
   const cycleBackground = () => {
     setActiveBackgroundIndex((prev) => (prev + 1) % backgroundThemes.length);
@@ -535,12 +514,14 @@ export default function Home() {
   const handleStartIntro = () => {
     soundEnabledRef.current = true;
     setIsSoundEnabled(true);
+    setIsIntroExiting(false);
     setHasIntroStarted(true);
   };
 
   const handleStartWithoutSound = () => {
     soundEnabledRef.current = false;
     setIsSoundEnabled(false);
+    setIsIntroExiting(false);
     setHasIntroStarted(true);
   };
 
@@ -556,6 +537,12 @@ export default function Home() {
     if (typeof window === "undefined") {
       return;
     }
+
+    const userAgent = window.navigator.userAgent;
+    const isSafari = /Safari/i.test(userAgent) && !/Chrome|CriOS|Chromium|Android|Edg/i.test(userAgent);
+    const isChrome = /Chrome|CriOS/i.test(userAgent) && !/Edg|OPR|Firefox/i.test(userAgent);
+    setIsSafariIntro(isSafari);
+    setIsNonChromeBrowser(!isChrome);
 
     const tickPool = Array.from({ length: 4 }, () => {
       const audio = new Audio("/sounds/intro-tick.wav");
@@ -604,13 +591,17 @@ export default function Home() {
     let finishTimer: number | null = null;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isDesktopViewport = window.matchMedia("(min-width: 1024px)").matches;
-    const typingInterval = isDesktopViewport ? 106 : 74;
+    const typingInterval = isSafariIntro ? (isDesktopViewport ? 118 : 84) : isDesktopViewport ? 106 : 74;
     const completionPause = isDesktopViewport ? 2200 : 1100;
     const reducedMotionPause = isDesktopViewport ? 1100 : 700;
+    const exitDuration = isSafariIntro ? 280 : 420;
 
-    if (reducedMotion) {
+    if (reducedMotion || isNonChromeBrowser) {
       setIntroText(INTRO_NAME);
-      finishTimer = window.setTimeout(() => setIsIntroVisible(false), reducedMotionPause);
+      finishTimer = window.setTimeout(() => {
+        setIsIntroExiting(true);
+        window.setTimeout(() => setIsIntroVisible(false), isNonChromeBrowser ? 180 : reducedMotionPause);
+      }, isNonChromeBrowser ? 900 : reducedMotionPause);
       return () => {
         if (finishTimer !== null) window.clearTimeout(finishTimer);
       };
@@ -625,7 +616,10 @@ export default function Home() {
       if (characterIndex >= INTRO_NAME.length && typingTimer !== null) {
         window.clearInterval(typingTimer);
         typingTimer = null;
-        finishTimer = window.setTimeout(() => setIsIntroVisible(false), completionPause);
+        finishTimer = window.setTimeout(() => {
+          setIsIntroExiting(true);
+          window.setTimeout(() => setIsIntroVisible(false), exitDuration);
+        }, completionPause);
       }
     }, typingInterval);
 
@@ -633,7 +627,7 @@ export default function Home() {
       if (typingTimer !== null) window.clearInterval(typingTimer);
       if (finishTimer !== null) window.clearTimeout(finishTimer);
     };
-  }, [hasIntroStarted]);
+  }, [hasIntroStarted, isNonChromeBrowser, isSafariIntro]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -644,13 +638,49 @@ export default function Home() {
     };
   }, [isIntroVisible]);
 
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const resetToHome = () => {
+      const currentUrl = new URL(window.location.href);
+      setFormRedirectUrl(`${currentUrl.origin}${currentUrl.pathname}?sent=1`);
+
+      if (currentUrl.hash) {
+        currentUrl.hash = "";
+        const nextSearch = currentUrl.searchParams.toString();
+        window.history.replaceState(null, "", `${currentUrl.pathname}${nextSearch ? `?${nextSearch}` : ""}`);
+      }
+
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    const handlePageShow = () => {
+      resetToHome();
+    };
+
+    resetToHome();
+    window.requestAnimationFrame(() => resetToHome());
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
     const currentUrl = new URL(window.location.href);
-    setFormRedirectUrl(`${currentUrl.origin}${currentUrl.pathname}?sent=1#contact`);
 
     if (currentUrl.searchParams.get("sent") !== "1") {
       return;
@@ -660,7 +690,7 @@ export default function Home() {
     setSubmitMessage("Thanks! Your message has been sent successfully.");
     currentUrl.searchParams.delete("sent");
     const nextSearch = currentUrl.searchParams.toString();
-    window.history.replaceState(null, "", `${currentUrl.pathname}${nextSearch ? `?${nextSearch}` : ""}${currentUrl.hash || "#contact"}`);
+    window.history.replaceState(null, "", `${currentUrl.pathname}${nextSearch ? `?${nextSearch}` : ""}`);
   }, []);
 
   useEffect(() => {
@@ -912,23 +942,26 @@ export default function Home() {
         {isIntroVisible ? (
           <motion.div
             key="intro-overlay"
-            className="intro-overlay fixed inset-0 z-[120] flex items-center justify-center px-6"
+            className={`intro-overlay fixed inset-0 z-[120] flex items-center justify-center px-6 ${isSafariIntro ? "is-safari" : ""} ${isIntroExiting ? "is-exiting" : ""}`.trim()}
             initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: isIntroExiting ? 0 : 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: isSafariIntro ? 0.28 : 0.42, ease: [0.22, 1, 0.36, 1] }}
           >
             <motion.div
-              className="intro-panel w-full max-w-6xl text-center"
+              className={`intro-panel w-full max-w-6xl text-center ${isSafariIntro ? "is-safari" : ""} ${isIntroExiting ? "is-exiting" : ""}`.trim()}
               initial={{ opacity: 0, scale: 0.94, y: 24 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.015, y: -12, filter: "blur(12px)" }}
-              transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+              animate={{ opacity: isIntroExiting ? 0 : 1, scale: isIntroExiting ? 1.01 : 1, y: isIntroExiting ? -8 : 0 }}
+              exit={{ opacity: 0, scale: 1.015, y: -12 }}
+              transition={{ duration: isSafariIntro ? 0.26 : 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
               {!hasIntroStarted ? (
                 <div className="intro-sound-row">
                   <p className="intro-kicker">Premium Intro</p>
                   <p className="intro-sound-note">Enable sound to hear the typing haptics before the name animation begins.</p>
+                  {isNonChromeBrowser ? (
+                    <p className="browser-disclaimer">For the smoothest intro animation and transitions, use Chrome. Other browsers use a simplified intro.</p>
+                  ) : null}
                   <div className="intro-actions">
                     <button type="button" className="sound-toggle-btn" onClick={handleStartIntro}>
                       Enable Premium Sound
@@ -941,9 +974,12 @@ export default function Home() {
               ) : (
                 <>
                   <p className="intro-kicker">Portfolio Opening</p>
+                  {isNonChromeBrowser ? (
+                    <p className="browser-disclaimer is-inline">Best viewed in Chrome for the full intro experience.</p>
+                  ) : null}
                   <motion.h1
-                    className="intro-name"
-                    exit={{ clipPath: "inset(0 100% 0 0)", filter: "blur(12px)", opacity: 0.12 }}
+                    className={`intro-name ${isSafariIntro ? "is-safari" : ""} ${isIntroExiting ? "is-exiting" : ""}`.trim()}
+                    exit={{ clipPath: "inset(0 100% 0 0)", opacity: 0.12 }}
                     transition={{ duration: 0.86, ease: [0.4, 0, 1, 1] }}
                   >
                     {introText}
@@ -961,18 +997,23 @@ export default function Home() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} />
 
-            <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
-              {navItems.map((item) => (
-                <a key={item.id} className="nav-link" href={`#${item.id}`} onClick={(event) => handleSmoothNav(event, item.id)}>
-                  {item.label}
+            <div className="site-nav scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
+              {navItems.map((item) => {
+                return (
+                <a key={item.id} className="nav-link" href={`#${item.id}`} onClick={(event) => handleSmoothNav(event, item.id)} aria-label={item.label}>
+                  <span className="nav-link-icon" aria-hidden="true">
+                    <NavGlyph kind={item.icon} gradientId={`nav-gradient-${item.id}`} />
+                  </span>
+                  <span className="nav-link-label">{item.label}</span>
                 </a>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
       </header>
 
-      <div className={`transition-[opacity,filter,transform] duration-[950ms] ${isPageReady ? "opacity-100 blur-0 translate-y-0" : "pointer-events-none opacity-0 blur-sm translate-y-4"}`}>
+      <div className={`page-shell ${isPageReady ? "is-ready" : ""}`.trim()}>
         <main
           className="site-main-content relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-10 pb-16 sm:gap-14 sm:pb-20"
         >
@@ -1323,7 +1364,7 @@ export default function Home() {
           <div className="section-stage section-stage-primary space-y-2">
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Our Team</h2>
             <p className="text-muted max-w-3xl text-sm leading-6 sm:text-base">
-              Meet the people behind our product delivery. Hover on each profile card to view details and contact options.
+              Meet the people behind our product delivery. Swipe through the cards or use the controls to explore the full team.
             </p>
           </div>
 
@@ -1400,6 +1441,20 @@ export default function Home() {
                   </div>
                 </div>
               </article>
+            ))}
+          </div>
+
+          <div className="mobile-team-dots" role="tablist" aria-label="Team profile positions mobile">
+            {teamMembers.map((member, index) => (
+              <button
+                key={`team-mobile-dot-${member.email}`}
+                type="button"
+                role="tab"
+                aria-selected={activeTeamIndex === index}
+                aria-label={`Go to profile ${index + 1}: ${member.name}`}
+                className={`team-dot ${activeTeamIndex === index ? "is-active" : ""}`}
+                onClick={() => scrollToTeamIndex(index)}
+              />
             ))}
           </div>
         </section>
