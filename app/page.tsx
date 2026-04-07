@@ -71,9 +71,6 @@ const backgroundThemes = [
 
 type BackgroundThemeId = (typeof backgroundThemes)[number]["id"];
 const INTRO_NAME = "Chandhan Madapakula";
-const SECTION_IDS = ["hero", "projects", "experience", "team", "contact"] as const;
-
-type SectionId = (typeof SECTION_IDS)[number];
 
 const stackShowcase = {
   name: "Radial Skill Radar",
@@ -477,37 +474,17 @@ function BackgroundStage({ activeThemeId }: { activeThemeId: BackgroundThemeId }
 
 export default function Home() {
   const shellRef = useRef<HTMLDivElement | null>(null);
-  const audioAssetsRef = useRef<{
-    sectionReveal: HTMLAudioElement;
-  } | null>(null);
   const introTickPoolRef = useRef<HTMLAudioElement[]>([]);
   const introTickCursorRef = useRef(0);
-  const sectionRefs = useRef<Record<SectionId, HTMLElement | null>>({
-    hero: null,
-    projects: null,
-    experience: null,
-    team: null,
-    contact: null,
-  });
-  const revealedSectionsRef = useRef<Set<string>>(new Set());
+  const formRef = useRef<HTMLFormElement | null>(null);
   const soundEnabledRef = useRef(false);
-  const scrollLockRef = useRef(false);
-  const touchStartYRef = useRef<number | null>(null);
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isIntroVisible, setIsIntroVisible] = useState(true);
   const [hasIntroStarted, setHasIntroStarted] = useState(false);
+  const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
   const [introText, setIntroText] = useState("");
   const [isSoundEnabled, setIsSoundEnabled] = useState(false);
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [activeBackgroundIndex, setActiveBackgroundIndex] = useState(0);
   const [activeTeamIndex, setActiveTeamIndex] = useState(0);
-  const [engagedSections, setEngagedSections] = useState<Record<SectionId, boolean>>({
-    hero: true,
-    projects: false,
-    experience: false,
-    team: false,
-    contact: false,
-  });
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -518,77 +495,19 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
+  const [formRedirectUrl, setFormRedirectUrl] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
   const [phoneError, setPhoneError] = useState("");
-  const lastScrollYRef = useRef(0);
   const teamCarouselRef = useRef<HTMLDivElement | null>(null);
   const teamExtRef = useRef(TEAM_CLONE);
   const teamScrollTimerRef = useRef<number | null>(null);
 
   const activeBackground = backgroundThemes[activeBackgroundIndex];
-  const activeSectionId = SECTION_IDS[activeSectionIndex];
   const isPageReady = !isIntroVisible;
 
   const cycleBackground = () => {
     setActiveBackgroundIndex((prev) => (prev + 1) % backgroundThemes.length);
   };
-
-  const setSectionRef = (sectionId: SectionId) => (node: HTMLElement | null) => {
-    sectionRefs.current[sectionId] = node;
-  };
-
-  const lockSectionScroll = (duration: number) => {
-    scrollLockRef.current = true;
-    window.setTimeout(() => {
-      scrollLockRef.current = false;
-    }, duration);
-  };
-
-  const navigateToSection = (nextIndex: number) => {
-    if (nextIndex < 0 || nextIndex >= SECTION_IDS.length || nextIndex === activeSectionIndex) {
-      return;
-    }
-
-    const nextSectionId = SECTION_IDS[nextIndex];
-    sectionRefs.current[nextSectionId]?.scrollTo({ top: 0, behavior: "auto" });
-    setActiveSectionIndex(nextIndex);
-    window.history.replaceState(null, "", nextSectionId === "hero" ? window.location.pathname : `#${nextSectionId}`);
-    lockSectionScroll(980);
-  };
-
-  const stepSectionEvent = useEffectEvent((direction: 1 | -1) => {
-    if (!isPageReady || isMobileNavOpen || scrollLockRef.current) {
-      return;
-    }
-
-    const currentSectionId = SECTION_IDS[activeSectionIndex];
-    const currentSection = sectionRefs.current[currentSectionId];
-
-    if (!engagedSections[currentSectionId]) {
-      setEngagedSections((prev) => ({ ...prev, [currentSectionId]: true }));
-      lockSectionScroll(760);
-      return;
-    }
-
-    if (currentSection) {
-      const maxScroll = currentSection.scrollHeight - currentSection.clientHeight;
-      const stepAmount = Math.max(currentSection.clientHeight * 0.72, 220);
-
-      if (direction > 0 && currentSection.scrollTop < maxScroll - 6) {
-        currentSection.scrollTo({ top: Math.min(maxScroll, currentSection.scrollTop + stepAmount), behavior: "smooth" });
-        lockSectionScroll(720);
-        return;
-      }
-
-      if (direction < 0 && currentSection.scrollTop > 6) {
-        currentSection.scrollTo({ top: Math.max(0, currentSection.scrollTop - stepAmount), behavior: "smooth" });
-        lockSectionScroll(720);
-        return;
-      }
-    }
-
-    navigateToSection(activeSectionIndex + direction);
-  });
 
   const triggerVibration = (pattern: number | number[]) => {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
@@ -613,13 +532,7 @@ export default function Home() {
     triggerVibration(8);
   };
 
-  const playSectionRevealSound = () => {
-    if (!soundEnabledRef.current) return;
-    replayAudio(audioAssetsRef.current?.sectionReveal);
-    triggerVibration(12);
-  };
-
-  const handleEnableSound = async () => {
+  const handleStartIntro = () => {
     soundEnabledRef.current = true;
     setIsSoundEnabled(true);
     setHasIntroStarted(true);
@@ -635,10 +548,6 @@ export default function Home() {
     playTypingTick();
   });
 
-  const playSectionRevealSoundEvent = useEffectEvent(() => {
-    playSectionRevealSound();
-  });
-
   useEffect(() => {
     soundEnabledRef.current = isSoundEnabled;
   }, [isSoundEnabled]);
@@ -648,10 +557,6 @@ export default function Home() {
       return;
     }
 
-    const sectionReveal = new Audio("/sounds/section-reveal.wav");
-    sectionReveal.preload = "auto";
-    sectionReveal.volume = 0.28;
-
     const tickPool = Array.from({ length: 4 }, () => {
       const audio = new Audio("/sounds/intro-tick.wav");
       audio.preload = "auto";
@@ -659,13 +564,10 @@ export default function Home() {
       return audio;
     });
 
-    audioAssetsRef.current = { sectionReveal };
     introTickPoolRef.current = tickPool;
 
     return () => {
-      sectionReveal.pause();
       tickPool.forEach((audio) => audio.pause());
-      audioAssetsRef.current = null;
       introTickPoolRef.current = [];
     };
   }, []);
@@ -673,6 +575,7 @@ export default function Home() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      setIsHeaderScrolled(currentScrollY > 24);
 
       if (shellRef.current) {
         const cappedScroll = Math.min(currentScrollY, 1800);
@@ -682,7 +585,6 @@ export default function Home() {
         shellRef.current.style.setProperty("--scroll-fade", `${Math.max(0.34, 1 - cappedScroll / 2000)}`);
       }
 
-      lastScrollYRef.current = currentScrollY;
     };
 
     handleScroll();
@@ -690,74 +592,6 @@ export default function Home() {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-    };
-  }, [activeSectionIndex]);
-
-  useEffect(() => {
-    if (!isPageReady) {
-      return;
-    }
-
-    const shellNode = shellRef.current;
-
-    const handleWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < 10) return;
-      event.preventDefault();
-      stepSectionEvent(event.deltaY > 0 ? 1 : -1);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
-        event.preventDefault();
-        stepSectionEvent(1);
-      }
-
-      if (["ArrowUp", "PageUp"].includes(event.key)) {
-        event.preventDefault();
-        stepSectionEvent(-1);
-      }
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      touchStartYRef.current = event.touches[0]?.clientY ?? null;
-    };
-
-    const handleTouchEnd = (event: TouchEvent) => {
-      if (touchStartYRef.current === null) return;
-
-      const endY = event.changedTouches[0]?.clientY ?? touchStartYRef.current;
-      const deltaY = touchStartYRef.current - endY;
-      touchStartYRef.current = null;
-
-      if (Math.abs(deltaY) < 42) return;
-      stepSectionEvent(deltaY > 0 ? 1 : -1);
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("keydown", handleKeyDown);
-    shellNode?.addEventListener("touchstart", handleTouchStart, { passive: true });
-    shellNode?.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("keydown", handleKeyDown);
-      shellNode?.removeEventListener("touchstart", handleTouchStart);
-      shellNode?.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [isPageReady, isMobileNavOpen]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 640) {
-        setIsMobileNavOpen(false);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -802,78 +636,32 @@ export default function Home() {
   }, [hasIntroStarted]);
 
   useEffect(() => {
-    if (!isPageReady) {
-      return;
-    }
-
-    const sections = Array.from(document.querySelectorAll<HTMLElement>(".page-section"));
-    if (sections.length === 0) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-
-          const target = entry.target as HTMLElement;
-          const sectionKey = target.id || target.dataset.section || target.className;
-          if (revealedSectionsRef.current.has(sectionKey)) {
-            return;
-          }
-
-          revealedSectionsRef.current.add(sectionKey);
-          playSectionRevealSoundEvent();
-        });
-      },
-      {
-        threshold: 0.55,
-      },
-    );
-
-    sections.forEach((section, index) => {
-      section.dataset.section = `section-${index}`;
-      observer.observe(section);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isPageReady, isSoundEnabled]);
-
-  useEffect(() => {
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = isIntroVisible ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isIntroVisible, isMobileNavOpen]);
+  }, [isIntroVisible]);
 
   useEffect(() => {
-    if (isIntroVisible) {
+    if (typeof window === "undefined") {
       return;
     }
 
-    if (!isMobileNavOpen) return;
+    const currentUrl = new URL(window.location.href);
+    setFormRedirectUrl(`${currentUrl.origin}${currentUrl.pathname}?sent=1#contact`);
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsMobileNavOpen(false);
-      }
-    };
+    if (currentUrl.searchParams.get("sent") !== "1") {
+      return;
+    }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isMobileNavOpen, isIntroVisible]);
+    setSubmitStatus("success");
+    setSubmitMessage("Thanks! Your message has been sent successfully.");
+    currentUrl.searchParams.delete("sent");
+    const nextSearch = currentUrl.searchParams.toString();
+    window.history.replaceState(null, "", `${currentUrl.pathname}${nextSearch ? `?${nextSearch}` : ""}${currentUrl.hash || "#contact"}`);
+  }, []);
 
   useEffect(() => {
     const carousel = teamCarouselRef.current;
@@ -992,13 +780,12 @@ export default function Home() {
 
   const handleSmoothNav = (event: MouseEvent<HTMLAnchorElement>, targetId: string) => {
     event.preventDefault();
+    const target = document.getElementById(targetId);
 
-    const nextIndex = SECTION_IDS.indexOf(targetId as SectionId);
-    if (nextIndex !== -1) {
-      navigateToSection(nextIndex);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `#${targetId}`);
     }
-
-    setIsMobileNavOpen(false);
   };
 
   const handleInputChange = (
@@ -1066,8 +853,12 @@ export default function Home() {
       payload.append("subject", formData.subject);
       payload.append("message", formData.message);
       payload.append("_subject", `[Portfolio Contact] ${formData.subject}`);
+      payload.append("_replyto", formData.email);
       payload.append("_captcha", "false");
       payload.append("_template", "table");
+      if (formRedirectUrl) {
+        payload.append("_next", formRedirectUrl);
+      }
 
       const response = await fetch("https://formsubmit.co/ajax/cchandhan021@gmail.com", {
         method: "POST",
@@ -1084,7 +875,7 @@ export default function Home() {
       }
 
       setSubmitStatus("success");
-      setSubmitMessage("Thanks! Your message has been sent successfully. Check your inbox to confirm FormSubmit activation the first time.");
+      setSubmitMessage("Thanks! Your message has been sent successfully.");
       setFormData({
         name: "",
         email: "",
@@ -1094,6 +885,11 @@ export default function Home() {
       });
       setPhoneError("");
     } catch (error) {
+      if (formRef.current) {
+        formRef.current.submit();
+        return;
+      }
+
       const message = error instanceof Error ? error.message : "Something went wrong.";
       setSubmitStatus("error");
       setSubmitMessage(message);
@@ -1102,14 +898,12 @@ export default function Home() {
     }
   };
 
-  const getSectionClassName = (sectionId: SectionId, extraClassName = "") => (
-    `page-section ${activeSectionId === sectionId ? "is-active" : ""} ${engagedSections[sectionId] ? "is-engaged" : ""} ${extraClassName}`.trim()
-  );
+  const getSectionClassName = (extraClassName = "") => `section-block ${extraClassName}`.trim();
 
   return (
     <div
       ref={shellRef}
-      className="theme-shell relative isolate min-h-screen overflow-hidden px-4 sm:px-6 md:px-8 lg:px-10"
+      className="theme-shell relative isolate min-h-screen overflow-x-hidden px-4 sm:px-6 md:px-8 lg:px-10"
       data-bg-theme={activeBackground.id}
     >
       <BackgroundStage activeThemeId={activeBackground.id} />
@@ -1134,9 +928,9 @@ export default function Home() {
               {!hasIntroStarted ? (
                 <div className="intro-sound-row">
                   <p className="intro-kicker">Premium Intro</p>
-                  <p className="intro-sound-note">Enable sound to hear the typing haptics and premium section reveal cues before the name animation begins.</p>
+                  <p className="intro-sound-note">Enable sound to hear the typing haptics before the name animation begins.</p>
                   <div className="intro-actions">
-                    <button type="button" className="sound-toggle-btn" onClick={() => void handleEnableSound()}>
+                    <button type="button" className="sound-toggle-btn" onClick={handleStartIntro}>
                       Enable Premium Sound
                     </button>
                     <button type="button" className="sound-toggle-btn is-secondary" onClick={handleStartWithoutSound}>
@@ -1162,83 +956,37 @@ export default function Home() {
         ) : null}
       </AnimatePresence>
 
-      <div className={`transition-[opacity,filter,transform] duration-[950ms] ${isPageReady ? "opacity-100 blur-0 translate-y-0" : "pointer-events-none opacity-0 blur-sm translate-y-4"}`}>
-
-      <button
-        type="button"
-        className={`mobile-nav-toggle ${isMobileNavOpen ? "is-open" : ""} is-visible`}
-        aria-label={isMobileNavOpen ? "Hide navigation" : "Show navigation"}
-        aria-expanded={isMobileNavOpen}
-        aria-controls="mobile-site-nav"
-        onClick={() => setIsMobileNavOpen((prev) => !prev)}
-      >
-        <span className="mobile-nav-toggle-label">C</span>
-      </button>
-
-      <div
-        className={`mobile-nav-backdrop ${isMobileNavOpen ? "is-open" : ""}`}
-        aria-hidden={!isMobileNavOpen}
-        onClick={() => setIsMobileNavOpen(false)}
-      />
-
-      <div
-        id="mobile-site-nav"
-        className={`mobile-nav-panel ${isMobileNavOpen ? "is-open" : ""}`}
-        aria-hidden={!isMobileNavOpen}
-      >
-        <div className="mobile-nav-panel-inner">
-          <div className="mobile-nav-header">
-            <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} className="mobile-site-logo" />
-          </div>
-
-          <nav className="mobile-nav-links" aria-label="Mobile navigation">
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                className="nav-link mobile-nav-link"
-                href={`#${item.id}`}
-                onClick={(event) => handleSmoothNav(event, item.id)}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      <header className="site-header is-scrolled">
+      <header className={`site-header ${isHeaderScrolled ? "is-scrolled" : ""}`.trim()}>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 py-4 sm:gap-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} />
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <LogoToggle currentTheme={activeBackground} onToggle={cycleBackground} />
 
-          <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
-          {navItems.map((item) => (
-            <a key={item.id} className="nav-link" href={`#${item.id}`} onClick={(event) => handleSmoothNav(event, item.id)}>
-              {item.label}
-            </a>
-          ))}
-        </div>
-        </div>
+            <div className="scrollbar-none -mx-1 flex w-full items-center gap-2 overflow-x-auto px-1 pb-1 text-sm sm:mx-0 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:px-0 sm:pb-0 lg:pb-0">
+              {navItems.map((item) => (
+                <a key={item.id} className="nav-link" href={`#${item.id}`} onClick={(event) => handleSmoothNav(event, item.id)}>
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 
-      <div className="site-viewport">
-      <main
-        className="site-main relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-0"
-        style={{ transform: `translate3d(0, calc(-${activeSectionIndex} * var(--page-step-height)), 0)` }}
-      >
-        <section
-          id="hero"
-          ref={setSectionRef("hero")}
-          className={getSectionClassName("hero", "hero-section grid gap-8 pb-2 pt-6 sm:gap-10 sm:pt-10 md:grid-cols-[1.1fr_0.9fr] md:items-center lg:gap-12")}
+      <div className={`transition-[opacity,filter,transform] duration-[950ms] ${isPageReady ? "opacity-100 blur-0 translate-y-0" : "pointer-events-none opacity-0 blur-sm translate-y-4"}`}>
+        <main
+          className="site-main-content relative z-30 mx-auto flex w-full max-w-6xl flex-col gap-10 pb-16 sm:gap-14 sm:pb-20"
         >
-          <div className="section-stage section-stage-primary">
-          <motion.div
-            initial={{ opacity: 0, x: -48, y: 18 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-5 sm:space-y-6"
+          <section
+            id="hero"
+            className={getSectionClassName("hero-section grid gap-8 pb-2 pt-0 sm:gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center lg:gap-12")}
           >
+            <div className="section-stage section-stage-primary">
+              <motion.div
+                initial={{ opacity: 0, x: -48, y: 18 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                className="space-y-5 sm:space-y-6"
+              >
             <motion.div
               initial={{ opacity: 0, y: -26 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1285,15 +1033,15 @@ export default function Home() {
                 Let&apos;s Talk
               </a>
             </motion.div>
-          </motion.div>
-          </div>
+              </motion.div>
+            </div>
 
-          <div className="section-stage section-stage-secondary">
-          <motion.aside
-            initial={{ opacity: 0, x: 64, y: 10 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="card stack-lab md:self-stretch"
+            <div className="section-stage section-stage-secondary">
+              <motion.aside
+                initial={{ opacity: 0, x: 64, y: 10 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ duration: 0.75, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                className="card stack-lab md:self-stretch"
           >
             <div className="stack-lab-head">
               <div>
@@ -1397,7 +1145,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="projects" ref={setSectionRef("projects")} className={getSectionClassName("projects", "space-y-4 sm:space-y-6")}>
+        <section id="projects" className={getSectionClassName("space-y-4 sm:space-y-6")}>
           <div className="section-stage section-stage-primary space-y-2">
             <p className="text-dim text-xs font-semibold uppercase tracking-[0.18em]">Some Of My Work</p>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Featured Websites & Products</h2>
@@ -1497,17 +1245,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="experience" ref={setSectionRef("experience")} className={getSectionClassName("experience", "space-y-5 sm:space-y-6")}>
+        <section id="experience" className={getSectionClassName("space-y-5 sm:space-y-6")}>
           <h2 className="section-stage section-stage-primary font-display text-2xl sm:text-3xl lg:text-4xl">Experience</h2>
           <div className="section-stage section-stage-secondary experience-timeline">
             <div className="experience-line" aria-hidden="true" />
             {experience.map((item, index) => (
               <motion.article
                 key={item.role + item.period}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -72 : 72, y: 8 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                initial={{ opacity: 0, y: 18, scale: 0.985 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.45, delay: 0.05 }}
+                transition={{ duration: 0.42, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
                 className={`experience-row ${index % 2 === 0 ? "is-left" : "is-right"}`}
               >
                 <div className="experience-col">
@@ -1571,7 +1319,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="team" ref={setSectionRef("team")} className={getSectionClassName("team", "space-y-5 sm:space-y-6")}>
+        <section id="team" className={getSectionClassName("space-y-5 sm:space-y-6")}>
           <div className="section-stage section-stage-primary space-y-2">
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl">Our Team</h2>
             <p className="text-muted max-w-3xl text-sm leading-6 sm:text-base">
@@ -1656,7 +1404,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" ref={setSectionRef("contact")} className={getSectionClassName("contact", "card space-y-6 sm:space-y-8")}>
+        <section id="contact" className={getSectionClassName("card space-y-6 sm:space-y-8")}>
           <div className="section-stage section-stage-primary flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="font-display text-2xl sm:text-3xl">Contact Us</h2>
@@ -1677,7 +1425,20 @@ export default function Home() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="section-stage section-stage-secondary grid gap-4 sm:gap-5">
+          <form
+            ref={formRef}
+            action="https://formsubmit.co/cchandhan021@gmail.com"
+            method="POST"
+            acceptCharset="UTF-8"
+            onSubmit={handleSubmit}
+            className="section-stage section-stage-secondary grid gap-4 sm:gap-5"
+          >
+            <input type="hidden" name="_subject" value={`[Portfolio Contact] ${formData.subject || "New inquiry"}`} />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_replyto" value={formData.email} />
+            <input type="hidden" name="_next" value={formRedirectUrl} />
+            <input type="hidden" name="phone" value={formData.phone ? `${phoneCountryCode} ${formData.phone}` : ""} />
             <div className="grid gap-4 md:grid-cols-2">
               <label className="text-strong space-y-1.5 text-sm font-semibold">
                 Full Name *
@@ -1689,6 +1450,7 @@ export default function Home() {
                   onChange={handleInputChange}
                   className="input-field"
                   placeholder="Your full name"
+                  autoComplete="name"
                 />
               </label>
               <label className="text-strong space-y-1.5 text-sm font-semibold">
@@ -1701,6 +1463,7 @@ export default function Home() {
                   onChange={handleInputChange}
                   className="input-field"
                   placeholder="you@example.com"
+                  autoComplete="email"
                 />
               </label>
             </div>
@@ -1721,13 +1484,13 @@ export default function Home() {
                     placeholder="+91"
                     maxLength={4}
                     aria-label="Country code"
+                    autoComplete="tel-country-code"
                   />
                   <div className="phone-number-wrap">
                     <input
                       id="phone-digits"
                       type="tel"
                       inputMode="numeric"
-                      name="phone"
                       value={formData.phone}
                       onChange={handlePhoneChange}
                       className="input-field phone-number-input"
@@ -1756,6 +1519,7 @@ export default function Home() {
                   onChange={handleInputChange}
                   className="input-field"
                   placeholder="What can we help with?"
+                  autoComplete="off"
                 />
               </label>
             </div>
@@ -1770,6 +1534,7 @@ export default function Home() {
                 onChange={handleInputChange}
                 className="input-field min-h-32 resize-y"
                 placeholder="Tell us about your requirement"
+                autoComplete="off"
               />
             </label>
 
@@ -1795,7 +1560,6 @@ export default function Home() {
           </form>
         </section>
       </main>
-      </div>
       </div>
     </div>
   );
